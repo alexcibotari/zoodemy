@@ -4,7 +4,9 @@ import {FlexLayoutModule} from '@angular/flex-layout';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
   DateAdapter,
-  MatFormFieldModule,
+  MatButtonModule,
+  MatCardModule,
+  MatCheckboxModule,
   MatIconModule,
   MatInputModule,
   MatToolbarModule,
@@ -15,7 +17,9 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 const ANGULAR_MODULE: any[] = [FormsModule, ReactiveFormsModule];
 const ANGULAR_LAYOUT_MODULE: any[] = [FlexLayoutModule];
 const MATERIAL_MODULES: any[] = [
-  MatFormFieldModule,
+  MatButtonModule,
+  MatCardModule,
+  MatCheckboxModule,
   MatIconModule,
   MatInputModule,
   MatToolbarModule,
