@@ -5,7 +5,7 @@ node_js:
   # Use the explicit NodeJS LTS version (https://github.com/nodejs/Release#release-schedule) to avoid any
   # automatic upgrade of the version. This ensures that all Travis jobs run consistently and don't have
   # different Node versions.
-  - '8.12.0'
+  - '10.14.2'
 
 branches:
   only:
@@ -14,13 +14,6 @@ branches:
 addons:
   chrome: stable
   firefox: latest
-
-env:
-  matrix:
-    - MODE=lint
-    # TODO(josephperrott): Add e2e tests
-    # - MODE=e2e
-    - MODE=test
 
 install:
   - npm install
