@@ -7,10 +7,17 @@
     "declaration": false,
     "module": "es2015",
     "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "es5",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowUnreachableCode": false,
+    "strictFunctionTypes": true,
+    "alwaysStrict": true,
+    "pretty": true,
     "typeRoots": [
       "node_modules/@types"
     ],
