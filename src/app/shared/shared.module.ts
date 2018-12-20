@@ -10,6 +10,7 @@ import {
   MatToolbarModule,
   NativeDateAdapter
 } from '@angular/material';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 const ANGULAR_MODULE: any[] = [FormsModule, ReactiveFormsModule];
 const ANGULAR_LAYOUT_MODULE: any[] = [FlexLayoutModule];
@@ -37,6 +38,7 @@ const MATERIAL_MODULES: any[] = [
     ANGULAR_MODULE,
     ANGULAR_LAYOUT_MODULE,
     MATERIAL_MODULES,
+    BrowserAnimationsModule
   ]
 })
 export class SharedModule {
