@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'ut-main',
+  selector: 'zc-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss']
 })

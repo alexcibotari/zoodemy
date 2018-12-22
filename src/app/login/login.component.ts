@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 
 @Component({
-  selector: 'ut-login',
+  selector: 'zc-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })

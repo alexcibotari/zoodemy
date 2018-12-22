@@ -3,11 +3,11 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "udemy-time": {
+    "zoocity": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
-      "prefix": "ut",
+      "prefix": "zc",
       "schematics": {
         "@schematics/angular:component": {
           "styleext": "scss"
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/udemy-time",
+            "outputPath": "dist/zoocity",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -63,18 +63,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "udemy-time:build"
+            "browserTarget": "zoocity:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "udemy-time:build:production"
+              "browserTarget": "zoocity:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "udemy-time:build"
+            "browserTarget": "zoocity:build"
           }
         },
         "test": {
@@ -110,7 +110,7 @@
         }
       }
     },
-    "udemy-time-e2e": {
+    "zoocity-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "prefix": "",
@@ -119,11 +119,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "udemy-time:serve"
+            "devServerTarget": "zoocity:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "udemy-time:serve:production"
+              "devServerTarget": "zoocity:serve:production"
             }
           }
         },
@@ -139,5 +139,5 @@
       }
     }
   },
-  "defaultProject": "udemy-time"
+  "defaultProject": "zoocity"
 }
