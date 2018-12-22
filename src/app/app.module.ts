@@ -6,6 +6,7 @@ import {SharedModule} from './shared/shared.module';
 import {LoginComponent} from './login/login.component';
 import {MainComponent} from './main/main.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
+import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import {DashboardComponent} from './dashboard/dashboard.component';
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     AppRoutingModule,
     SharedModule
   ],
