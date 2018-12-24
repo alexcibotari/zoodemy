@@ -1,7 +1,7 @@
 <div fxFlexFill fxLayout="column" fxLayoutAlign="center center">
   <mat-icon>fingerprint</mat-icon>
   <h1>Login</h1>
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutAlign="space-around center">
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutAlign="space-around none">
     <mat-form-field>
       <input matInput formControlName="login" placeholder="Enter your username or email" type="text">
     </mat-form-field>

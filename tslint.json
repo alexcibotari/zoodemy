@@ -128,12 +128,6 @@
       "sr",
       "camelCase"
     ],
-    "component-selector": [
-      true,
-      "element",
-      "sr",
-      "kebab-case"
-    ],
     "no-output-on-prefix": true,
     "use-input-property-decorator": true,
     "use-output-property-decorator": true,

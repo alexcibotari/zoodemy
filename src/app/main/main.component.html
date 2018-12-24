@@ -6,8 +6,10 @@
       <input matInput placeholder="Search">
     </mat-form-field>
     <span class="spacer"></span>
-    <mat-icon>settings</mat-icon>
     <mat-icon>account_circle</mat-icon>
+    <button mat-icon-button (click)="logout()">
+      <mat-icon aria-label="Logout">exit_to_app</mat-icon>
+    </button>
   </mat-toolbar-row>
 </mat-toolbar>
 <router-outlet></router-outlet>

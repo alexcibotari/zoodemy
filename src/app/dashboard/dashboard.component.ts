@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {AuthService, User} from '../core/auth.service';
 
 @Component({
   selector: 'zc-dashboard',
@@ -7,9 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DashboardComponent implements OnInit {
 
-  constructor() { }
+  user: User;
+
+  constructor(
+      private readonly auth: AuthService
+  ) {
+  }
 
   ngOnInit(): void {
+    this.user = this.auth.getUser();
   }
 
 }

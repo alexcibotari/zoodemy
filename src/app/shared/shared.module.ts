@@ -9,6 +9,7 @@ import {
   MatCheckboxModule,
   MatIconModule,
   MatInputModule,
+  MatSnackBarModule,
   MatToolbarModule,
   NativeDateAdapter
 } from '@angular/material';
@@ -22,7 +23,8 @@ const MATERIAL_MODULES: any[] = [
   MatCheckboxModule,
   MatIconModule,
   MatInputModule,
-  MatToolbarModule,
+  MatSnackBarModule,
+  MatToolbarModule
 ];
 
 @NgModule({
