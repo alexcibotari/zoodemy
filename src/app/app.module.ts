@@ -7,13 +7,17 @@ import {LoginComponent} from './login/login.component';
 import {MainComponent} from './main/main.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {HttpClientModule} from '@angular/common/http';
+import {CoursesComponent} from './courses/courses.component';
+import { CourseDetailComponent } from './course-detail/course-detail.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     MainComponent,
-    DashboardComponent
+    DashboardComponent,
+    CoursesComponent,
+    CourseDetailComponent
   ],
   imports: [
     BrowserModule,

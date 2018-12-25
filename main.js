@@ -9,7 +9,7 @@ const isDebug = process.argv.some(val => val === '--debug');
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({width: 2000, height: 1200})
-
+//new BrowserWindow({ fullscreen: true });
   // and load the index.html of the app.
   if (isDebug) {
     require('electron-reload')(__dirname, {

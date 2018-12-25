@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
-import {AuthService} from './auth.service';
 import {Observable} from 'rxjs';
 import {tap} from 'rxjs/operators';
-import {environment} from '../../environments/environment';
+import {AuthService} from '../shared/service/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +15,7 @@ export class SecurityInterceptor implements HttpInterceptor {
     if (this.auth.getToken() && !request.headers.has('Authorization')) {
       request = request.clone({
         setHeaders: {
-          Authorization: `${environment.api.udemy.auth.type} ${this.auth.getToken()}`
+          Authorization: `Bearer ${this.auth.getToken()}`
         }
       });
     }

@@ -1,14 +1,22 @@
 <mat-toolbar color="primary">
   <mat-toolbar-row>
     <span>ZooCity</span>
+    <button mat-icon-button routerLink="/">
+      <mat-icon>dashboard</mat-icon>
+    </button>
+    <button mat-icon-button routerLink="/courses">
+      <mat-icon>subscriptions</mat-icon>
+    </button>
     <span class="spacer"></span>
     <mat-form-field>
       <input matInput placeholder="Search">
     </mat-form-field>
     <span class="spacer"></span>
-    <mat-icon>account_circle</mat-icon>
+    <button mat-icon-button (click)="reload()">
+      <mat-icon>refresh</mat-icon>
+    </button>
     <button mat-icon-button (click)="logout()">
-      <mat-icon aria-label="Logout">exit_to_app</mat-icon>
+      <mat-icon>exit_to_app</mat-icon>
     </button>
   </mat-toolbar-row>
 </mat-toolbar>

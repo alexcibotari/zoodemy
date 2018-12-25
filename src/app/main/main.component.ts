@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {AuthService} from '../core/auth.service';
+import {AuthService} from '../shared/service/auth.service';
 
 @Component({
   selector: 'zc-main',
@@ -18,6 +18,10 @@ export class MainComponent implements OnInit {
 
   logout(): void {
     this.auth.logout();
+  }
+
+  reload(): void {
+    location.reload(true);
   }
 
 }

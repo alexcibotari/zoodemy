@@ -4,6 +4,8 @@ import {MainComponent} from './main/main.component';
 import {LoginComponent} from './login/login.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {AuthGuard} from './core/auth.guard';
+import {CoursesComponent} from './courses/courses.component';
+import {CourseDetailComponent} from './course-detail/course-detail.component';
 
 const routes: Routes = [
   {path: '', redirectTo: '/dashboard', pathMatch: 'full'},
@@ -18,6 +20,14 @@ const routes: Routes = [
       {
         path: 'dashboard',
         component: DashboardComponent
+      },
+      {
+        path: 'courses',
+        component: CoursesComponent
+      },
+      {
+        path: 'courses/:id',
+        component: CourseDetailComponent
       }
     ],
     canActivate: [AuthGuard]

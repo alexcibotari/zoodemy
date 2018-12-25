@@ -3,17 +3,19 @@ import {NgModule} from '@angular/core';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
-  DateAdapter,
   MatButtonModule,
   MatCardModule,
   MatCheckboxModule,
+  MatDividerModule,
   MatIconModule,
   MatInputModule,
+  MatListModule,
   MatSnackBarModule,
   MatToolbarModule,
-  NativeDateAdapter
 } from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {AuthService} from './service/auth.service';
+import {UdemyService} from './service/udemy.service';
 
 const ANGULAR_MODULE: any[] = [FormsModule, ReactiveFormsModule];
 const ANGULAR_LAYOUT_MODULE: any[] = [FlexLayoutModule];
@@ -23,8 +25,10 @@ const MATERIAL_MODULES: any[] = [
   MatCheckboxModule,
   MatIconModule,
   MatInputModule,
+  MatListModule,
   MatSnackBarModule,
-  MatToolbarModule
+  MatToolbarModule,
+  MatDividerModule
 ];
 
 @NgModule({
@@ -38,7 +42,8 @@ const MATERIAL_MODULES: any[] = [
   declarations: [],
   entryComponents: [],
   providers: [
-    {provide: DateAdapter, useClass: NativeDateAdapter},
+    AuthService,
+    UdemyService
   ],
   exports: [
     ANGULAR_MODULE,

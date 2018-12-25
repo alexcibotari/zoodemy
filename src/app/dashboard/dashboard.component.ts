@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {AuthService, User} from '../core/auth.service';
+import {User} from '../shared/model/user.model';
+import {AuthService} from '../shared/service/auth.service';
 
 @Component({
   selector: 'zc-dashboard',

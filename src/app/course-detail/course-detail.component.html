@@ -1,0 +1,28 @@
+<mat-list>
+  <ng-container *ngFor="let item of items" [ngSwitch]="item._class">
+    <ng-container *ngSwitchCase="'chapter'">
+      <mat-divider></mat-divider>
+      <h3 mat-subheader>
+        {{item.title}}
+      </h3>
+    </ng-container>
+    <ng-container *ngSwitchCase="'lecture'">
+      <mat-list-item>
+        <mat-icon mat-list-icon *ngIf="item.asset.asset_type == 'Video'; else article">
+          play_circle_outline
+        </mat-icon>
+        <ng-template #article>
+          <mat-icon mat-list-icon>insert_drive_file</mat-icon>
+        </ng-template>
+        <h4 mat-line>{{item.title}} - {{item.asset?.asset_type}}</h4>
+        <!-- TODO add supplementary_assets -->
+      </mat-list-item>
+    </ng-container>
+    <ng-container *ngSwitchCase="'quiz'">
+      <mat-list-item>
+        <mat-icon mat-list-icon>help_outline</mat-icon>
+        <h4 mat-line>{{item.title}}</h4>
+      </mat-list-item>
+    </ng-container>
+  </ng-container>
+</mat-list>

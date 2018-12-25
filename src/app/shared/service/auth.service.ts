@@ -2,23 +2,9 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {environment} from '../../environments/environment';
 import {Router} from '@angular/router';
-
-export interface User {
-  _class: string;
-  id: number;
-  title: string;
-  name: string;
-  display_name: string;
-  job_title: string;
-  image_50x50: string;
-  image_100x100: string;
-  initials: string;
-  url: string;
-  is_generated: boolean;
-  access_token: string;
-}
+import {User} from '../model/user.model';
+import {environment} from '../../../environments/environment';
 
 const SUB_DOMAIN_KEY: string = 'sub_domain';
 const USER_KEY: string = 'user';
