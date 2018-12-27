@@ -24,8 +24,9 @@ export class CoursesComponent implements OnInit {
   }
 
   download(course: Course): void {
-    console.log(course);
-    // this.udemyService.downloadCourse(course.id, course.published_title);
+    // this.udemyService.downloadCourse(course.id, course.title);
+    console.log(course.title);
+    this.udemyService.download();
   }
 
 }

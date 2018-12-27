@@ -12,7 +12,7 @@ export interface Asset {
   captions: Caption[];
   body: string;
   filename: string;
-  download_urls: Map<string, FileMetadata>;
-  stream_urls: Map<string, FileMetadata>;
+  download_urls: { [header: string]: FileMetadata[] };
+  stream_urls: { [header: string]: FileMetadata[] };
   data: AssetMetadata;
 }
