@@ -10,6 +10,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {CoursesComponent} from './courses/courses.component';
 import { CourseDetailComponent } from './course-detail/course-detail.component';
 import {NgxElectronModule} from 'ngx-electron';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import {NgxElectronModule} from 'ngx-electron';
     MainComponent,
     DashboardComponent,
     CoursesComponent,
-    CourseDetailComponent
+    CourseDetailComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,

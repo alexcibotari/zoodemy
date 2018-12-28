@@ -13,6 +13,7 @@ import {concatMap, filter, map, switchMap} from 'rxjs/operators';
 import {MatSnackBar} from '@angular/material';
 import {environment} from '../../../environments/environment';
 import {WriteStream} from 'fs';
+import {OsUtil} from '../../core/os.util';
 
 interface CourseDownloadMetadata {
   courseId: number;
@@ -34,7 +35,7 @@ export class UdemyService {
   private readonly downloadHeaders: HttpHeaders = new HttpHeaders({
     'Content-Type': `application/octet-stream`
   });
-  private readonly PATH: string = 'C:/Users/alexa/Downloads/';
+  private readonly APP_HOME_PATH: string = `${OsUtil.getHomePath()}/zoocity`;
   private readonly fs: any = this.electronService.remote.require('fs');
 
   constructor(
@@ -43,6 +44,12 @@ export class UdemyService {
       private readonly electronService: ElectronService,
       private readonly snackBar: MatSnackBar,
   ) {
+    if (this.fs.existsSync(this.APP_HOME_PATH)) {
+      console.log(`App home directory already exist.`);
+    } else {
+      this.fs.mkdirSync(this.APP_HOME_PATH);
+      console.log(`Create App home directory`);
+    }
   }
 
   getSubscribedCourses(): Observable<Result<Course>> {
@@ -108,27 +115,9 @@ export class UdemyService {
     );
   }
 
-  downloadFile(path: string, url: string): void {
-    this.http.get(url,
-        {
-          headers: this.downloadHeaders,
-          reportProgress: true,
-          responseType: 'arraybuffer',
-          // observe: 'events'
-          observe: 'response'
-        })
-    .subscribe(value => {
-          console.log(`Download file : ${path}`);
-          this.fs.writeFile(path, new Uint8Array(value.body), () => {
-          });
-        }
-    );
-
-  }
-
   downloadCourse(id: number, dirName: string): void {
     const downloadList: BehaviorSubject<CourseDownloadMetadata> = new BehaviorSubject<CourseDownloadMetadata>(null);
-    const courseDir: string = `${this.PATH}${sanitize(dirName)}`;
+    const courseDir: string = `${this.APP_HOME_PATH}${sanitize(dirName)}`;
     if (this.fs.existsSync(courseDir)) {
       console.log(`Directory already exist ${courseDir}`);
     } else {
@@ -159,7 +148,6 @@ export class UdemyService {
                   dir: chapterDir,
                   lectureIdx: lectureIdx++
                 });
-                // this.downloadLecture(id, block.id, chapterDir, lectureIdx++);
                 break;
               case 'quiz' :
                 console.log(`\t${block.id} - ${block.title}`);
@@ -190,22 +178,12 @@ export class UdemyService {
             maxIdx = maxIdx + step;
           }
           if (maxIdx < value.data.byteLength - 1) {
-            writeStream.write( new Buffer(value.data.slice(maxIdx)));
+            writeStream.write(new Buffer(value.data.slice(maxIdx)));
           }
-          console.log(`iterations : ${iterations}`);
           writeStream.on('finish', () => {
-            console.log(`wrote all data to file : ${value.path}`);
+            console.log(`Saved lecture : ${value.path}`);
           });
           writeStream.end();
-
-          /*this.fs.writeFile(value.path, new Uint8Array(value.data),
-              (error) => {
-                if (error) {
-                  console.log(`Error during save : ${value.path}`);
-                } else {
-                  console.log(`Saved lecture : ${value.path}`);
-                }
-              });*/
         },
         () => {
           this.snackBar.open(

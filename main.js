@@ -8,7 +8,13 @@ const isDebug = process.argv.some(val => val === '--debug');
 
 function createWindow() {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 2000, height: 1200})
+  mainWindow = new BrowserWindow(
+      {
+        width: 2000,
+        height: 1200,
+        icon: `${__dirname}/dist/zoocity/assets/icons/icon_48dp@2.png`
+      }
+  );
 //new BrowserWindow({ fullscreen: true });
   // and load the index.html of the app.
   if (isDebug) {

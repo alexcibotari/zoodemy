@@ -1,8 +1,7 @@
 <mat-toolbar color="primary">
   <mat-toolbar-row>
-    <span>ZooCity</span>
-    <button mat-icon-button routerLink="/">
-      <mat-icon>dashboard</mat-icon>
+    <button mat-button routerLink="/">
+      <mat-icon>pets</mat-icon> ZooCity
     </button>
     <button mat-icon-button routerLink="/courses">
       <mat-icon>subscriptions</mat-icon>
@@ -14,6 +13,9 @@
     <span class="spacer"></span>
     <button mat-icon-button (click)="reload()">
       <mat-icon>refresh</mat-icon>
+    </button>
+    <button mat-icon-button routerLink="/settings">
+      <mat-icon>settings</mat-icon>
     </button>
     <button mat-icon-button (click)="logout()">
       <mat-icon>exit_to_app</mat-icon>

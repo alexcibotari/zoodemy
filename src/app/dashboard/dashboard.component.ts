@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {User} from '../shared/model/user.model';
 import {AuthService} from '../shared/service/auth.service';
+import {OsUtil} from '../core/os.util';
 
 @Component({
   selector: 'zc-dashboard',
@@ -18,6 +19,10 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.user = this.auth.getUser();
+  }
+
+  getHomePath(): string {
+    return OsUtil.getHomePath();
   }
 
 }

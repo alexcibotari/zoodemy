@@ -6,6 +6,7 @@ import {DashboardComponent} from './dashboard/dashboard.component';
 import {AuthGuard} from './core/auth.guard';
 import {CoursesComponent} from './courses/courses.component';
 import {CourseDetailComponent} from './course-detail/course-detail.component';
+import {SettingsComponent} from './settings/settings.component';
 
 const routes: Routes = [
   {path: '', redirectTo: '/dashboard', pathMatch: 'full'},
@@ -28,6 +29,10 @@ const routes: Routes = [
       {
         path: 'courses/:id',
         component: CourseDetailComponent
+      },
+      {
+        path: 'settings',
+        component: SettingsComponent
       }
     ],
     canActivate: [AuthGuard]
