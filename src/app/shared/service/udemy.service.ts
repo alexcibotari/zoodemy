@@ -40,7 +40,7 @@ export class UdemyService {
   constructor(
       private readonly http: HttpClient,
       private readonly auth: AuthService,
-      private electronService: ElectronService,
+      private readonly electronService: ElectronService,
       private readonly snackBar: MatSnackBar,
   ) {
   }
@@ -56,6 +56,7 @@ export class UdemyService {
 
   getCourse(id: number): Observable<Result<CourseBlock>> {
     return this.http.get<Result<CourseBlock>>(
+        // tslint:disable-next-line
         `https://${this.auth.getSubDomain()}.udemy.com/api-2.0/courses/${id}/cached-subscriber-curriculum-items?page_size=100000&fields[lecture]=@default,object_index,supplementary_assets`,
         {
           headers: this.authHeaders
@@ -64,7 +65,9 @@ export class UdemyService {
   }
 
   getLecture(courseId: number, lectureId: number): Observable<Lecture> {
-    return this.http.get<Lecture>(`https://${this.auth.getSubDomain()}.udemy.com/api-2.0/users/me/subscribed-courses/${courseId}/lectures/${lectureId}?fields[asset]=@default,stream_urls,download_urls,captions,title,filename,data,body&fields[lecture]=@default,asset,supplementary_assets`,
+    return this.http.get<Lecture>(
+        // tslint:disable-next-line
+        `https://${this.auth.getSubDomain()}.udemy.com/api-2.0/users/me/subscribed-courses/${courseId}/lectures/${lectureId}?fields[asset]=@default,stream_urls,download_urls,captions,title,filename,data,body&fields[lecture]=@default,asset,supplementary_assets`,
         {
           headers: this.authHeaders
         });
