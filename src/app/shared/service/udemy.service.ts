@@ -10,6 +10,9 @@ import {ElectronService} from 'ngx-electron';
 import * as sanitize from 'sanitize-filename';
 import {AssetType} from '../model/asset-type.model';
 import {concatMap, filter, map, switchMap} from 'rxjs/operators';
+import {MatSnackBar} from '@angular/material';
+import {environment} from '../../../environments/environment';
+import {WriteStream} from 'fs';
 
 interface CourseDownloadMetadata {
   courseId: number;
@@ -37,7 +40,8 @@ export class UdemyService {
   constructor(
       private readonly http: HttpClient,
       private readonly auth: AuthService,
-      private electronService: ElectronService
+      private electronService: ElectronService,
+      private readonly snackBar: MatSnackBar,
   ) {
   }
 
@@ -75,22 +79,26 @@ export class UdemyService {
             const ext: string = lecture.asset.filename.slice(extIdx, lecture.asset.filename.length);
             const filePath: string = `${dir}/${this.numberOptimization(lectureIdx)} - ${sanitize(lecture.title)}${ext}`;
             const fileUrl: string = lecture.asset.download_urls.Video[0].file;
-            return this.http.get(fileUrl,
-                {
-                  headers: this.downloadHeaders,
-                  reportProgress: true,
-                  responseType: 'arraybuffer',
-                  // observe: 'events'
-                  observe: 'response'
-                })
-            .pipe(
-                map(value => {
-                  return <LectureFileMetadata>{
-                    path: filePath,
-                    data: value.body
-                  };
-                })
-            );
+            if (!this.fs.existsSync(filePath)) {
+              return this.http.get(fileUrl,
+                  {
+                    headers: this.downloadHeaders,
+                    reportProgress: true,
+                    responseType: 'arraybuffer',
+                    // observe: 'events'
+                    observe: 'response'
+                  })
+              .pipe(
+                  map(value => {
+                    return <LectureFileMetadata>{
+                      path: filePath,
+                      data: value.body
+                    };
+                  })
+              );
+            } else {
+              console.log(`File already exist : ${filePath}`);
+            }
           }
           return EMPTY;
         })
@@ -165,11 +173,55 @@ export class UdemyService {
           return this.downloadLecture(value.courseId, value.lectureId, value.dir, value.lectureIdx);
         })
     )
-    .subscribe(value => {
-      console.log(`Download lecture : ${value.path}`);
-      this.fs.writeFileSync(value.path, new Uint8Array(value.data));
-      console.log(`Saved lecture : ${value.path}`);
-    });
+    .subscribe((value: LectureFileMetadata) => {
+          console.log(`Download lecture : ${value.path}`);
+
+          const step: number = 1024 * 1024;
+          const iterations: number = value.data.byteLength / step;
+          let minIdx: number = 0;
+          let maxIdx: number = step;
+          const writeStream: WriteStream = this.fs.createWriteStream(value.path);
+          for (let i: number = 0; i <= iterations; i++) {
+            writeStream.write(new Buffer(value.data.slice(minIdx, maxIdx)));
+            minIdx = minIdx + step;
+            maxIdx = maxIdx + step;
+          }
+          if (maxIdx < value.data.byteLength - 1) {
+            writeStream.write( new Buffer(value.data.slice(maxIdx)));
+          }
+          console.log(`iterations : ${iterations}`);
+          writeStream.on('finish', () => {
+            console.log(`wrote all data to file : ${value.path}`);
+          });
+          writeStream.end();
+
+          /*this.fs.writeFile(value.path, new Uint8Array(value.data),
+              (error) => {
+                if (error) {
+                  console.log(`Error during save : ${value.path}`);
+                } else {
+                  console.log(`Saved lecture : ${value.path}`);
+                }
+              });*/
+        },
+        () => {
+          this.snackBar.open(
+              `Error during downloading.`,
+              '',
+              {
+                duration: environment.message.duration
+              }
+          );
+        },
+        () => {
+          this.snackBar.open(
+              `Download completed.`,
+              '',
+              {
+                duration: environment.message.duration
+              }
+          );
+        });
   }
 
   private numberOptimization(idx: number): string {
