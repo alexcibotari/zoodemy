@@ -1,0 +1,12 @@
+appId: zoocity
+productName: ZooCity
+directories:
+  output: out
+mac:
+  icon: dist/zoocity/assets/icons/icon.icns
+dmg:
+  icon: dist/zoocity/assets/icons/icon.icns
+linux:
+  icon: electron/icons
+win:
+  icon: dist/zoocity/assets/icons/icon.ico

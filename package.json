@@ -1,9 +1,13 @@
 {
   "name": "zoocity",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": {
     "name": "Alexandru Cibotari",
     "email": "alexandru.cibotari@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alexcibotari/zoocity.git"
   },
   "browser": {
     "fs": false,
@@ -13,10 +17,14 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --prod",
     "build:watch": "ng build --watch",
     "electron:debug": "electron . --debug",
-    "electron": "ng build --base-href ./ && electron .",
+    "electron": "ng build --prod && electron .",
+    "build:wml": "npm run build && electron-builder -wml",
+    "build:win": "npm run build && electron-builder -w",
+    "build:mac": "npm run build && electron-builder -m",
+    "build:linux": "npm run build && electron-builder -l",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

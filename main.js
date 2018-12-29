@@ -1,6 +1,5 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow} = require('electron')
-require('electron-reload')(__dirname);
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
@@ -12,7 +11,7 @@ function createWindow() {
       {
         width: 2000,
         height: 1200,
-        icon: `${__dirname}/dist/zoocity/assets/icons/icon_48dp@2.png`
+        icon: `dist/zoocity/assets/icons/icon_48dp@2.png`
       }
   );
 //new BrowserWindow({ fullscreen: true });
