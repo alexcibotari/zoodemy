@@ -1,4 +1,4 @@
-<div fxFlexFill fxLayout="column" fxLayoutAlign="start center">
+<div fxLayout="column" fxLayoutAlign="start center" class="box" style="height: auto;">
   <h3>Settings</h3>
   <input type="file" webkitdirectory style="display: none" #downloadPathInput
          (change)="onDownloadPathChange($event)"/>
@@ -11,7 +11,7 @@
       <mat-label>Download Path</mat-label>
       <input matInput formControlName="downloadPath" type="text" readonly>
       <button matSuffix mat-icon-button (click)="downloadPathInput.click();">
-        <mat-icon>web_asset</mat-icon>
+        <mat-icon>folder</mat-icon>
       </button>
     </mat-form-field>
     <mat-form-field appearance="outline">

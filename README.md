@@ -34,7 +34,7 @@ Please let me know about your preferable features.
 ## Developers
 
 - Run locally ``npm run electron``.
-- Debug locally. Open two consoles in first run ``npm run build:watch`` and wait until build ends, in second console run ``npm run electron:debug``.
+- Debug locally. Open two consoles in first run ``npm run build:watch`` and wait until build ends, in second console run ``npm run electron:dev``.
 
 ## For personal use only
 Do not share courses downloaded with the application, it is for personal use only.

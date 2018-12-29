@@ -3,7 +3,7 @@ const {app, BrowserWindow} = require('electron')
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
-const isDebug = process.argv.some(val => val === '--debug');
+const isDev = process.argv.some(val => val === '--dev');
 const dist = `${__dirname}/dist/zoocity`;
 require('electron-reload')(`${dist}`);
 
@@ -18,15 +18,11 @@ function createWindow() {
   );
 //new BrowserWindow({ fullscreen: true });
   // and load the index.html of the app.
-  if (isDebug) {
-    // require('electron-reload')(`${dist}`);
-    mainWindow.loadFile('dist/zoocity/index.html')
+  if (isDev) {
     // Open the DevTools.
     mainWindow.webContents.openDevTools()
-  } else {
-    mainWindow.loadFile('dist/zoocity/index.html')
   }
-
+  mainWindow.loadFile(`${dist}/index.html`)
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
     // Dereference the window object, usually you would store windows
