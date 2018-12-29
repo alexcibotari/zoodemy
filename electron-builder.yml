@@ -10,3 +10,7 @@ linux:
   icon: electron/icons
 win:
   icon: dist/zoocity/assets/icons/icon.ico
+  target: nsis
+nsis:
+  createDesktopShortcut: always
+  installerIcon: dist/zoocity/assets/icons/icon.ico

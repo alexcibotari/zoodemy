@@ -10,12 +10,14 @@ import {
   MatIconModule,
   MatInputModule,
   MatListModule,
+  MatSelectModule,
   MatSnackBarModule,
   MatToolbarModule,
 } from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AuthService} from './service/auth.service';
 import {UdemyService} from './service/udemy.service';
+import {SettingsService} from './service/settings.service';
 
 const ANGULAR_MODULE: any[] = [FormsModule, ReactiveFormsModule];
 const ANGULAR_LAYOUT_MODULE: any[] = [FlexLayoutModule];
@@ -27,6 +29,7 @@ const MATERIAL_MODULES: any[] = [
   MatInputModule,
   MatListModule,
   MatSnackBarModule,
+  MatSelectModule,
   MatToolbarModule,
   MatDividerModule
 ];
@@ -43,7 +46,8 @@ const MATERIAL_MODULES: any[] = [
   entryComponents: [],
   providers: [
     AuthService,
-    UdemyService
+    UdemyService,
+    SettingsService
   ],
   exports: [
     ANGULAR_MODULE,

@@ -13,7 +13,7 @@ import {concatMap, filter, map, switchMap} from 'rxjs/operators';
 import {MatSnackBar} from '@angular/material';
 import {environment} from '../../../environments/environment';
 import {WriteStream} from 'fs';
-import {OsUtil} from '../../core/os.util';
+import {SettingsService} from './settings.service';
 
 interface CourseDownloadMetadata {
   courseId: number;
@@ -35,7 +35,6 @@ export class UdemyService {
   private readonly downloadHeaders: HttpHeaders = new HttpHeaders({
     'Content-Type': `application/octet-stream`
   });
-  private readonly APP_HOME_PATH: string = `${OsUtil.getHomePath()}/zoocity`;
   private readonly fs: any = this.electronService.remote.require('fs');
 
   constructor(
@@ -43,11 +42,12 @@ export class UdemyService {
       private readonly auth: AuthService,
       private readonly electronService: ElectronService,
       private readonly snackBar: MatSnackBar,
+      private readonly settingsService: SettingsService
   ) {
-    if (this.fs.existsSync(this.APP_HOME_PATH)) {
+    if (this.fs.existsSync(this.settingsService.getDownloadPath())) {
       console.log(`App home directory already exist.`);
     } else {
-      this.fs.mkdirSync(this.APP_HOME_PATH);
+      this.fs.mkdirSync(this.settingsService.getDownloadPath());
       console.log(`Create App home directory`);
     }
   }
@@ -117,7 +117,7 @@ export class UdemyService {
 
   downloadCourse(id: number, dirName: string): void {
     const downloadList: BehaviorSubject<CourseDownloadMetadata> = new BehaviorSubject<CourseDownloadMetadata>(null);
-    const courseDir: string = `${this.APP_HOME_PATH}${sanitize(dirName)}`;
+    const courseDir: string = `${this.settingsService.getDownloadPath()}${sanitize(dirName)}`;
     if (this.fs.existsSync(courseDir)) {
       console.log(`Directory already exist ${courseDir}`);
     } else {

@@ -1,6 +1,7 @@
 {
   "name": "zoocity",
   "version": "0.0.1",
+  "description": "A minimalistic Udemy offline courses downloader and player. Built on Electron, Angular and Material for frontend.",
   "author": {
     "name": "Alexandru Cibotari",
     "email": "alexandru.cibotari@gmail.com"
@@ -17,7 +18,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod",
+    "build": "ng build",
     "build:watch": "ng build --watch",
     "electron:debug": "electron . --debug",
     "electron": "ng build --prod && electron .",

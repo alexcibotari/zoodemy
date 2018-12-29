@@ -12,6 +12,8 @@ A minimalistic Udemy offline courses downloader and player. Built on Electron, A
   - Quiz
 - Download subscribed course
   - Video
+- Settings
+  - Change app home folder
 
 ## Future Features
 
@@ -20,9 +22,12 @@ A minimalistic Udemy offline courses downloader and player. Built on Electron, A
   - Additional Assets
   - Articles
   - Quiz
+  - Subtitles
 - Settings
-  - Change app home folder
   - Choose preferred video resolution
+  - Additional Assets
+  - Subtitles
+- Multi language
   
 Please let me know about your preferable features.
 

@@ -4,6 +4,8 @@ const {app, BrowserWindow} = require('electron')
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 const isDebug = process.argv.some(val => val === '--debug');
+const dist = `${__dirname}/dist/zoocity`;
+require('electron-reload')(`${dist}`);
 
 function createWindow() {
   // Create the browser window.
@@ -11,15 +13,13 @@ function createWindow() {
       {
         width: 2000,
         height: 1200,
-        icon: `dist/zoocity/assets/icons/icon_48dp@2.png`
+        icon: `${dist}/assets/icons/48x48.png`
       }
   );
 //new BrowserWindow({ fullscreen: true });
   // and load the index.html of the app.
   if (isDebug) {
-    require('electron-reload')(__dirname, {
-      electron: require(`${__dirname}/node_modules/electron`)
-    });
+    // require('electron-reload')(`${dist}`);
     mainWindow.loadFile('dist/zoocity/index.html')
     // Open the DevTools.
     mainWindow.webContents.openDevTools()
