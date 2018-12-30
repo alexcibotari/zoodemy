@@ -3,10 +3,7 @@
   <input type="file" webkitdirectory style="display: none" #downloadPathInput
          (change)="onDownloadPathChange($event)"/>
 
-  <form [formGroup]="settingsForm" (ngSubmit)="onSubmit()"
-        fxLayout="column"
-        fxLayoutAlign="space-around none">
-
+  <form [formGroup]="settingsForm" fxLayout="column" fxLayoutAlign="space-around none">
     <mat-form-field appearance="outline">
       <mat-label>Download Path</mat-label>
       <input matInput formControlName="downloadPath" type="text" readonly>
@@ -16,20 +13,22 @@
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Video Quality</mat-label>
-      <mat-select formControlName="videoQuality" [disabled]="true">
+      <mat-select formControlName="videoQuality">
         <mat-option *ngFor="let vq of videoQualityList" [value]="vq">
           {{vq}}
         </mat-option>
       </mat-select>
     </mat-form-field>
-    <mat-checkbox formControlName="downloadAttachments" [disabled]="true">
+    <mat-checkbox formControlName="downloadAttachments">
       Download Attachments ? (not working at the moment)
     </mat-checkbox>
-    <mat-checkbox formControlName="downloadSubtitles" [disabled]="true">
+    <mat-checkbox formControlName="downloadSubtitles">
       Download Subtitles ? (not working at the moment)
     </mat-checkbox>
     <br/>
-    <button mat-raised-button color="primary" type="submit" [disabled]="!settingsForm.valid">
+    <button mat-raised-button color="primary" type="submit"
+            [disabled]="!settingsForm.valid"
+            (click)="onSubmit()">
       Save
     </button>
   </form>
