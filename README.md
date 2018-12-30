@@ -11,23 +11,25 @@ A minimalistic Udemy offline courses downloader and player. Built on Electron, A
   - Article
   - Quiz
 - Download subscribed course
-  - Video
+  - Progress bar
+  - Assets:
+    - Video
 - Settings
   - Change app home folder
 
 ## Future Features
 
 - Download subscribed course
-  - Progress bar
-  - Additional Assets
-  - Articles
-  - Quiz
-  - Subtitles
+  - Assets:
+    - Additional Assets
+    - Articles
+    - Quiz
+    - Subtitles
 - Settings
   - Choose preferred video resolution
   - Additional Assets
   - Subtitles
-- Multi language
+- Multi language (Only English at the moment)
   
 Please let me know about your preferable features.
 

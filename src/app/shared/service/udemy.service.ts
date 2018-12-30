@@ -3,17 +3,20 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {AuthService} from './auth.service';
 import {Result} from '../model/result.model';
 import {Course} from '../model/course.model';
-import {BehaviorSubject, EMPTY, Observable} from 'rxjs';
+import {BehaviorSubject, EMPTY, interval, Observable, of, throwError} from 'rxjs';
 import {CourseBlock} from '../model/course-block.model';
 import {Lecture} from '../model/lecture.model';
 import {ElectronService} from 'ngx-electron';
 import * as sanitize from 'sanitize-filename';
 import {AssetType} from '../model/asset-type.model';
-import {concatMap, filter, map, switchMap} from 'rxjs/operators';
+import {concatMap, filter, flatMap, map, retryWhen, switchMap} from 'rxjs/operators';
 import {MatSnackBar} from '@angular/material';
 import {environment} from '../../../environments/environment';
 import {WriteStream} from 'fs';
 import {SettingsService} from './settings.service';
+import {DownloadProgress} from '../model/download-progress.model';
+import {FileMetadata} from '../model/file-metadata.model';
+import {VideoQuality} from '../model/video-quality.model';
 
 interface CourseDownloadMetadata {
   courseId: number;
@@ -80,6 +83,39 @@ export class UdemyService {
         });
   }
 
+  private selectVideo(videos: FileMetadata[]): FileMetadata {
+    let result: FileMetadata = videos[0];
+    switch (this.settingsService.getVideoQuality()) {
+      case VideoQuality.AUTO:
+      case VideoQuality.HIGHEST:
+        videos.forEach(video => {
+          if (+video.label > +result.label) {
+            result = video;
+          }
+        });
+        break;
+      case VideoQuality.LOWEST:
+        videos.forEach(video => {
+          if (+video.label < +result.label) {
+            result = video;
+          }
+        });
+        break;
+      case VideoQuality.H144:
+      case VideoQuality.H360:
+      case VideoQuality.H480:
+      case VideoQuality.H720:
+      case VideoQuality.H1080:
+        videos.forEach(video => {
+          if (+video.label === +this.settingsService.getVideoQuality()) {
+            result = video;
+          }
+        });
+        break;
+    }
+    return result;
+  }
+
   downloadLecture(courseId: number, lectureId: number, dir: string, lectureIdx: number): Observable<LectureFileMetadata> {
     return this.getLecture(courseId, lectureId)
     .pipe(
@@ -88,7 +124,7 @@ export class UdemyService {
             const extIdx: number = lecture.asset.filename.lastIndexOf('.');
             const ext: string = lecture.asset.filename.slice(extIdx, lecture.asset.filename.length);
             const filePath: string = `${dir}/${this.numberOptimization(lectureIdx)} - ${sanitize(lecture.title)}${ext}`;
-            const fileUrl: string = lecture.asset.download_urls.Video[0].file;
+            const fileUrl: string = this.selectVideo(lecture.asset.download_urls.Video).file;
             if (!this.fs.existsSync(filePath)) {
               return this.http.get(fileUrl,
                   {
@@ -99,6 +135,11 @@ export class UdemyService {
                     observe: 'response'
                   })
               .pipe(
+                  retryWhen(() => {
+                    return interval(5000).pipe(
+                        flatMap(count => count === 5 ? throwError('Giving up') : of(count))
+                    );
+                  }),
                   map(value => {
                     return <LectureFileMetadata>{
                       path: filePath,
@@ -115,9 +156,12 @@ export class UdemyService {
     );
   }
 
-  downloadCourse(id: number, dirName: string): void {
+  downloadCourse(id: number, dirName: string): Observable<DownloadProgress> {
+    let totalFiles: number = 0;
+    let currentFile: number = 0;
+    const downloadProgress: BehaviorSubject<DownloadProgress> = new BehaviorSubject<DownloadProgress>(null);
     const downloadList: BehaviorSubject<CourseDownloadMetadata> = new BehaviorSubject<CourseDownloadMetadata>(null);
-    const courseDir: string = `${this.settingsService.getDownloadPath()}${sanitize(dirName)}`;
+    const courseDir: string = `${this.settingsService.getDownloadPath()}/${sanitize(dirName)}`;
     if (this.fs.existsSync(courseDir)) {
       console.log(`Directory already exist ${courseDir}`);
     } else {
@@ -133,11 +177,8 @@ export class UdemyService {
             switch (block._class) {
               case 'chapter' :
                 chapterDir = `${courseDir}/${this.numberOptimization(chapterIdx++)} - ${sanitize(block.title)}`;
-                if (this.fs.existsSync(chapterDir)) {
-                  console.log(`Directory already exist ${chapterDir}`);
-                } else {
+                if (!this.fs.existsSync(chapterDir)) {
                   this.fs.mkdirSync(chapterDir);
-                  console.log(`Create directory ${chapterDir}`);
                 }
                 lectureIdx = 1;
                 break;
@@ -148,6 +189,7 @@ export class UdemyService {
                   dir: chapterDir,
                   lectureIdx: lectureIdx++
                 });
+                totalFiles++;
                 break;
               case 'quiz' :
                 console.log(`\t${block.id} - ${block.title}`);
@@ -155,8 +197,8 @@ export class UdemyService {
             }
           }
       );
+      downloadProgress.next(new DownloadProgress(totalFiles));
     });
-
     downloadList.asObservable()
     .pipe(
         filter(value => value != null),
@@ -184,8 +226,10 @@ export class UdemyService {
             console.log(`Saved lecture : ${value.path}`);
           });
           writeStream.end();
+          downloadProgress.next(new DownloadProgress(totalFiles, ++currentFile));
         },
-        () => {
+        (error) => {
+          console.log(error);
           this.snackBar.open(
               `Error during downloading.`,
               '',
@@ -203,6 +247,10 @@ export class UdemyService {
               }
           );
         });
+    return downloadProgress.asObservable()
+    .pipe(
+        filter(value => value != null)
+    );
   }
 
   private numberOptimization(idx: number): string {

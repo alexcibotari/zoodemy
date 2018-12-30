@@ -16,3 +16,21 @@
     </mat-card>
   </div>
 </div>
+<div class="box footer" *ngIf="progress">
+  <mat-card>
+    <mat-card-header>
+      <img mat-card-avatar [src]="progress.image">
+      <mat-card-title>{{progress.title}}</mat-card-title>
+      <mat-card-subtitle>
+        <mat-progress-bar *ngIf="progress.progress; else indeterminate;" mode="determinate" [value]="progress.progress.percentage"></mat-progress-bar>
+        <span *ngIf="progress.progress">Downloaded {{progress.progress.currentFile}} from {{progress.progress.totalFiles}} lectures</span>
+        <ng-template #indeterminate>
+          <mat-progress-bar *ngIf="progress" mode="indeterminate"></mat-progress-bar>
+        </ng-template>
+      </mat-card-subtitle>
+      <mat-card-actions *ngIf="progress.progress && progress.progress.isDone">
+        <button mat-stroked-button (click)="progress = null">Close</button>
+      </mat-card-actions>
+    </mat-card-header>
+  </mat-card>
+</div>

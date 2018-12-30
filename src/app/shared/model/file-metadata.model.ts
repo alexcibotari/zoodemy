@@ -1,5 +1,7 @@
+import {VideoQuality} from './video-quality.model';
+
 export interface FileMetadata {
   type: string;
-  label: string;
+  label: VideoQuality;
   file: string;
 }

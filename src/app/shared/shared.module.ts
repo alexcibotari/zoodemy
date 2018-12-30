@@ -10,6 +10,7 @@ import {
   MatIconModule,
   MatInputModule,
   MatListModule,
+  MatProgressBarModule,
   MatSelectModule,
   MatSnackBarModule,
   MatToolbarModule,
@@ -25,13 +26,14 @@ const MATERIAL_MODULES: any[] = [
   MatButtonModule,
   MatCardModule,
   MatCheckboxModule,
+  MatDividerModule,
   MatIconModule,
   MatInputModule,
   MatListModule,
-  MatSnackBarModule,
+  MatProgressBarModule,
   MatSelectModule,
-  MatToolbarModule,
-  MatDividerModule
+  MatSnackBarModule,
+  MatToolbarModule
 ];
 
 @NgModule({
