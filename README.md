@@ -14,7 +14,9 @@ A minimalistic Udemy offline courses downloader and player. Built on Electron, A
   - Progress bar
   - Assets:
     - Video
+    - Additional Assets
     - Articles
+    - E-Book
 - Settings
   - Change app home folder
 
@@ -22,7 +24,6 @@ A minimalistic Udemy offline courses downloader and player. Built on Electron, A
 
 - Download subscribed course
   - Assets:
-    - Additional Assets
     - Quiz
     - Subtitles
 - Settings
