@@ -4,7 +4,7 @@ import {ActivatedRoute} from '@angular/router';
 import {CourseBlock} from '../shared/model/course-block.model';
 
 @Component({
-  selector: 'zc-course-detail',
+  selector: 'zd-course-detail',
   templateUrl: './course-detail.component.html',
   styleUrls: ['./course-detail.component.scss']
 })

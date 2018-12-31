@@ -7,7 +7,7 @@ import {VideoQuality} from '../model/video-quality.model';
 export class SettingsService {
 
   private readonly SETTINGS_KEY: string = 'settings';
-  private readonly APP_HOME_PATH_DEFAULT: string = `${OsUtil.getHomePath()}/zoocity`;
+  private readonly APP_HOME_PATH_DEFAULT: string = `${OsUtil.getHomePath()}/zoodemy`;
   private settings: Settings;
 
   constructor() {

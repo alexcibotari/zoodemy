@@ -1,16 +1,16 @@
-appId: zoocity
-productName: ZooCity
+appId: zoodemy
+productName: ZooDemy
 directories:
   output: out
 mac:
-  icon: dist/zoocity/assets/icons/icon.icns
+  icon: dist/zoodemy/assets/icons/icon.icns
 dmg:
-  icon: dist/zoocity/assets/icons/icon.icns
+  icon: dist/zoodemy/assets/icons/icon.icns
 linux:
-  icon: electron/icons
+  icon: dist/zoodemy/assets/icons
 win:
-  icon: dist/zoocity/assets/icons/icon.ico
+  icon: dist/zoodemy/assets/icons/icon.ico
   target: nsis
 nsis:
   createDesktopShortcut: always
-  installerIcon: dist/zoocity/assets/icons/icon.ico
+  installerIcon: dist/zoodemy/assets/icons/icon.ico

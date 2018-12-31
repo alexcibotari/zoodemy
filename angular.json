@@ -3,11 +3,11 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "zoocity": {
+    "zoodemy": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
-      "prefix": "zc",
+      "prefix": "zd",
       "schematics": {
         "@schematics/angular:component": {
           "styleext": "scss"
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/zoocity",
+            "outputPath": "dist/zoodemy",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -61,18 +61,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "zoocity:build"
+            "browserTarget": "zoodemy:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "zoocity:build:production"
+              "browserTarget": "zoodemy:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "zoocity:build"
+            "browserTarget": "zoodemy:build"
           }
         },
         "test": {
@@ -106,7 +106,7 @@
         }
       }
     },
-    "zoocity-e2e": {
+    "zoodemy-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "prefix": "",
@@ -115,11 +115,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "zoocity:serve"
+            "devServerTarget": "zoodemy:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "zoocity:serve:production"
+              "devServerTarget": "zoodemy:serve:production"
             }
           }
         },
@@ -135,5 +135,5 @@
       }
     }
   },
-  "defaultProject": "zoocity"
+  "defaultProject": "zoodemy"
 }

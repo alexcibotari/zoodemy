@@ -4,7 +4,7 @@ import {Course} from '../shared/model/course.model';
 import {CourseDownloadProgress} from '../shared/model/course-download-progress.model';
 
 @Component({
-  selector: 'zc-courses',
+  selector: 'zd-courses',
   templateUrl: './courses.component.html',
   styleUrls: ['./courses.component.scss']
 })

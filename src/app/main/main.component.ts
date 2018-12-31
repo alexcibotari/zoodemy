@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../shared/service/auth.service';
 
 @Component({
-  selector: 'zc-main',
+  selector: 'zd-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss']
 })

@@ -4,7 +4,7 @@ import {AuthService} from '../shared/service/auth.service';
 import {OsUtil} from '../core/os.util';
 
 @Component({
-  selector: 'zc-dashboard',
+  selector: 'zd-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })

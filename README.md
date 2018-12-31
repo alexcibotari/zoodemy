@@ -1,6 +1,6 @@
-# ZooCity
+# ZooDemy
 
-[![Build Status](https://travis-ci.org/alexcibotari/zoocity.svg?branch=master)](https://travis-ci.org/alexcibotari/zoocity)
+[![Build Status](https://travis-ci.org/alexcibotari/zoodemy.svg?branch=master)](https://travis-ci.org/alexcibotari/zoodemy)
 
 A minimalistic Udemy offline courses downloader and player. Built on Electron, Angular and Material for frontend.
 

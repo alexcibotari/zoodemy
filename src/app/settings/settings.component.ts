@@ -6,7 +6,7 @@ import {MatSnackBar} from '@angular/material';
 import {environment} from '../../environments/environment';
 
 @Component({
-  selector: 'zc-settings',
+  selector: 'zd-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss']
 })

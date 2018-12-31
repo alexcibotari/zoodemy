@@ -8,7 +8,7 @@ import {AuthService} from '../shared/service/auth.service';
 import {User} from '../shared/model/user.model';
 
 @Component({
-  selector: 'zc-login',
+  selector: 'zd-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })

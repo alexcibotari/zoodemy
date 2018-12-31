@@ -4,7 +4,7 @@ const {app, BrowserWindow} = require('electron')
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 const isDev = process.argv.some(val => val === '--dev');
-const dist = `${__dirname}/dist/zoocity`;
+const dist = `${__dirname}/dist/zoodemy`;
 require('electron-reload')(`${dist}`);
 
 function createWindow() {
