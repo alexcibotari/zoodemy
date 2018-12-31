@@ -25,9 +25,9 @@ interface CourseDownloadMetadata {
   lectureIdx: number;
 }
 
-interface LectureFileMetadata {
+interface AssetMetadata {
   path: string;
-  data: ArrayBuffer;
+  data: ArrayBuffer | string;
 }
 
 @Injectable()
@@ -116,15 +116,16 @@ export class UdemyService {
     return result;
   }
 
-  downloadLecture(courseId: number, lectureId: number, dir: string, lectureIdx: number): Observable<LectureFileMetadata> {
+  downloadLecture(courseId: number, lectureId: number, dir: string, lectureIdx: number): Observable<AssetMetadata> {
     return this.getLecture(courseId, lectureId)
     .pipe(
         switchMap((lecture: Lecture) => {
+          let filePath: string = `${dir}/${this.numberOptimization(lectureIdx)} - ${sanitize(lecture.title)}`;
           if (lecture.asset.asset_type === AssetType.VIDEO) {
             const extIdx: number = lecture.asset.filename.lastIndexOf('.');
             const ext: string = lecture.asset.filename.slice(extIdx, lecture.asset.filename.length);
-            const filePath: string = `${dir}/${this.numberOptimization(lectureIdx)} - ${sanitize(lecture.title)}${ext}`;
             const fileUrl: string = this.selectVideo(lecture.asset.download_urls.Video).file;
+            filePath = `${filePath}${ext}`;
             if (!this.fs.existsSync(filePath)) {
               return this.http.get(fileUrl,
                   {
@@ -141,7 +142,7 @@ export class UdemyService {
                     );
                   }),
                   map(value => {
-                    return <LectureFileMetadata>{
+                    return <AssetMetadata>{
                       path: filePath,
                       data: value.body
                     };
@@ -150,6 +151,11 @@ export class UdemyService {
             } else {
               console.log(`File already exist : ${filePath}`);
             }
+          } else if (lecture.asset.asset_type === AssetType.ARTICLE) {
+            return of(<AssetMetadata>{
+              path: `${filePath}.html`,
+              data: lecture.asset.body
+            });
           }
           return EMPTY;
         })
@@ -206,26 +212,31 @@ export class UdemyService {
           return this.downloadLecture(value.courseId, value.lectureId, value.dir, value.lectureIdx);
         })
     )
-    .subscribe((value: LectureFileMetadata) => {
+    .subscribe((value: AssetMetadata) => {
           console.log(`Download lecture : ${value.path}`);
 
-          const step: number = 1024 * 1024;
-          const iterations: number = value.data.byteLength / step;
-          let minIdx: number = 0;
-          let maxIdx: number = step;
-          const writeStream: WriteStream = this.fs.createWriteStream(value.path);
-          for (let i: number = 0; i <= iterations; i++) {
-            writeStream.write(new Buffer(value.data.slice(minIdx, maxIdx)));
-            minIdx = minIdx + step;
-            maxIdx = maxIdx + step;
-          }
-          if (maxIdx < value.data.byteLength - 1) {
-            writeStream.write(new Buffer(value.data.slice(maxIdx)));
-          }
-          writeStream.on('finish', () => {
+          if (value.data instanceof ArrayBuffer) {
+            const step: number = 1024 * 1024;
+            const iterations: number = value.data.byteLength / step;
+            let minIdx: number = 0;
+            let maxIdx: number = step;
+            const writeStream: WriteStream = this.fs.createWriteStream(value.path);
+            for (let i: number = 0; i <= iterations; i++) {
+              writeStream.write(new Buffer(value.data.slice(minIdx, maxIdx)));
+              minIdx = minIdx + step;
+              maxIdx = maxIdx + step;
+            }
+            if (maxIdx < value.data.byteLength - 1) {
+              writeStream.write(new Buffer(value.data.slice(maxIdx)));
+            }
+            writeStream.on('finish', () => {
+              console.log(`Saved lecture : ${value.path}`);
+            });
+            writeStream.end();
+          } else {
+            this.fs.writeFileSync(value.path, value.data);
             console.log(`Saved lecture : ${value.path}`);
-          });
-          writeStream.end();
+          }
           downloadProgress.next(new DownloadProgress(totalFiles, ++currentFile));
         },
         (error) => {
