@@ -4,6 +4,8 @@
 
 A minimalistic Udemy offline courses downloader and player. Built on Electron, Angular and Material for frontend.
 
+![Video](zoodemy.gif)
+
 ## Features
 
 - Display subscribed course
