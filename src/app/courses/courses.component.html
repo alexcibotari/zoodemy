@@ -26,10 +26,10 @@
         <mat-progress-bar *ngIf="progress.progress; else indeterminate;" mode="determinate"
                           [value]="progress.progress.percentage"></mat-progress-bar>
         <mat-hint *ngIf="progress.progress">Downloaded {{progress.progress.currentFile}}
-          from {{progress.progress.totalFiles}} lectures
+          from {{progress.progress.totalFiles}} files.
         </mat-hint>
         <mat-error *ngIf="progress.progress && progress.progress.error">Error during downloading.
-          Please try again
+          Please try again.
         </mat-error>
         <ng-template #indeterminate>
           <mat-progress-bar *ngIf="progress" mode="indeterminate"></mat-progress-bar>
