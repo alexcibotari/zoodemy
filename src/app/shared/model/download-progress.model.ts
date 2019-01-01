@@ -1,7 +1,8 @@
 export class DownloadProgress {
   constructor(
       public totalFiles: number = 0,
-      public currentFile: number = 0
+      public currentFile: number = 0,
+      public error: boolean = false
   ) {
 
   }

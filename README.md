@@ -12,6 +12,8 @@ A minimalistic Udemy offline courses downloader and player. Built on Electron, A
   - Quiz
 - Download subscribed course
   - Progress bar
+  - Retry to download lecture on network issues (10 retries)
+  - Retry to download course after network issues (manually)
   - Assets:
     - Video
     - Additional Assets

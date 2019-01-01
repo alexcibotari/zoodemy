@@ -143,8 +143,8 @@ export class UdemyService {
         })
     .pipe(
         retryWhen(() => {
-          return interval(5000).pipe(
-              flatMap(count => count === 5 ? throwError('Giving up') : of(count))
+          return interval(environment.download.interval).pipe(
+              flatMap(count => count === environment.download.retry ? throwError(`Error during download of ${url} for ${path}`) : of(count))
           );
         }),
         map(value => new AssetMetadata<ArrayBuffer>(path, value.body))
@@ -200,13 +200,13 @@ export class UdemyService {
     );
   }
 
-  downloadCourse(id: number, dirName: string): Observable<DownloadProgress> {
+  downloadCourse(id: number, title: string): Observable<DownloadProgress> {
     let totalFiles: number = 0;
     let currentFile: number = 0;
     const downloadProgress: BehaviorSubject<DownloadProgress> = new BehaviorSubject<DownloadProgress>(null);
     const downloadSaveAssets: BehaviorSubject<DownloadableAssetMetadata> = new BehaviorSubject<DownloadableAssetMetadata>(null);
     const saveArticles: BehaviorSubject<AssetMetadata<String>> = new BehaviorSubject<AssetMetadata<String>>(null);
-    const courseDir: string = `${this.settingsService.getDownloadPath()}/${sanitize(dirName)}`;
+    const courseDir: string = `${this.settingsService.getDownloadPath()}/${sanitize(title)}`;
     if (this.fs.existsSync(courseDir)) {
       console.log(`Directory already exist ${courseDir}`);
     } else {
@@ -309,18 +309,21 @@ export class UdemyService {
           downloadProgress.next(new DownloadProgress(totalFiles, ++currentFile));
         },
         (error) => {
+          console.log(`${title}' Error during downloading.`);
           console.log(error);
           this.snackBar.open(
-              `Error during downloading.`,
+              `${title}' Error during downloading.`,
               '',
               {
                 duration: environment.message.duration
               }
           );
+          downloadProgress.next(new DownloadProgress(totalFiles, ++currentFile, true));
         },
         () => {
+          console.log(`'${title}' Download completed.`);
           this.snackBar.open(
-              `Download completed.`,
+              `'${title}' Download completed.`,
               '',
               {
                 duration: environment.message.duration

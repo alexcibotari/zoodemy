@@ -15,6 +15,10 @@ export const environment: any = {
   },
   message: {
     duration: 5000
+  },
+  download: {
+    retry: 10,
+    interval: 10000
   }
 };
 

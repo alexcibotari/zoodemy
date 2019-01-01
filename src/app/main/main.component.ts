@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../shared/service/auth.service';
+import {environment} from '../../environments/environment';
 
 @Component({
   selector: 'zd-main',
@@ -7,6 +8,8 @@ import {AuthService} from '../shared/service/auth.service';
   styleUrls: ['./main.component.scss']
 })
 export class MainComponent implements OnInit {
+
+  isReloadable: boolean = !environment.production;
 
   constructor(
       private readonly auth: AuthService

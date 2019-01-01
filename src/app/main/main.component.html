@@ -11,7 +11,7 @@
       <input matInput placeholder="Search">
     </mat-form-field>
     <span class="spacer"></span>
-    <button mat-icon-button (click)="reload()">
+    <button mat-icon-button (click)="reload()" *ngIf="isReloadable">
       <mat-icon>refresh</mat-icon>
     </button>
     <button mat-icon-button routerLink="/settings">
