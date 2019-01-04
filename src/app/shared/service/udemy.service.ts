@@ -218,6 +218,12 @@ export class UdemyService {
       let chapterDir: string;
       let chapterIdx: number = 1;
       let lectureIdx: number = 1;
+      if (course.results[0]._class === 'lecture') {
+        chapterDir = `${courseDir}/${this.numberOptimization(chapterIdx++)} - ${sanitize('Course Introduction')}`;
+        if (!this.fs.existsSync(chapterDir)) {
+          this.fs.mkdirSync(chapterDir);
+        }
+      }
       course.results.forEach(block => {
             switch (block._class) {
               case 'chapter' :
@@ -300,7 +306,7 @@ export class UdemyService {
             maxIdx = maxIdx + step;
           }
           if (maxIdx < value.data.byteLength - 1) {
-            writeStream.write(new Buffer(value.data.slice(maxIdx)));
+            writeStream.write(Buffer.from(value.data.slice(maxIdx)));
           }
           writeStream.on('finish', () => {
             console.log(`Saved lecture : ${value.path}`);
