@@ -73,7 +73,8 @@ export class UdemyService {
 
   getSubscribedCourses(): Observable<Result<Course>> {
     return this.http.get<Result<Course>>(
-        `https://${this.auth.getSubDomain()}.udemy.com/api-2.0/users/me/subscribed-courses?page_size=50`,
+        // tslint:disable-next-line
+        `https://${this.auth.getSubDomain()}.udemy.com/api-2.0/users/me/subscribed-courses?page_size=50&fields[course]=@default,completion_ratio,visible_instructors`,
         {
           headers: this.authHeaders
         }

@@ -39,4 +39,5 @@ export interface Course {
    */
   image_480x270: string;
   published_title: string;
+  completion_ratio: number;
 }

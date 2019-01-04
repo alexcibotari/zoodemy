@@ -3,7 +3,13 @@
     <mat-card *ngFor="let course of courses">
       <mat-card-content>
         <img mat-card-image [src]="course.image_240x135" [alt]="course.title">
-        {{course.title}}
+        <mat-card-title class="content">{{course.title}}</mat-card-title>
+          <div *ngFor="let user of course.visible_instructors">
+            {{user.display_name}}
+          </div>
+        <br/>
+        <mat-progress-bar mode="determinate" [value]="course.completion_ratio"></mat-progress-bar>
+        {{course.completion_ratio}}% Complete
       </mat-card-content>
       <mat-card-actions>
         <button mat-icon-button (click)="download(course.id, course.title, course.image_240x135)"
@@ -20,7 +26,7 @@
 <div class="box footer" *ngIf="progress">
   <mat-card>
     <mat-card-header>
-      <img mat-card-avatar [src]="progress.image">
+      <img mat-card-avatar [src]="progress.image" [alt]="progress.title"/>
       <mat-card-title>{{progress.title}}</mat-card-title>
       <mat-card-subtitle>
         <mat-progress-bar *ngIf="progress.progress; else indeterminate;" mode="determinate"
