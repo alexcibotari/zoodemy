@@ -14,6 +14,6 @@ export const environment: any = {
   },
   download: {
     retry: 10,
-    interval: 10000
+    interval: 50000
   }
 };

@@ -142,7 +142,8 @@ export class UdemyService {
           observe: 'response'
         })
     .pipe(
-        retryWhen(() => {
+        retryWhen((errors) => {
+          console.log(errors);
           return interval(environment.download.interval).pipe(
               flatMap(count => count === environment.download.retry ? throwError(`Error during download of ${url} for ${path}`) : of(count))
           );
