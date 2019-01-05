@@ -27,7 +27,7 @@ export class CoursesComponent implements OnInit {
 
   download(id: number, title: string, imageUrl: string): void {
     this.progress = new CourseDownloadProgress(id, title, imageUrl);
-    this.udemyService.downloadCourse(id, title)
+    this.udemyService.downloadCourse(id, title, imageUrl)
     .subscribe(value => {
       this.progress.progress = value;
     });

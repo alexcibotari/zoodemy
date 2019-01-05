@@ -202,7 +202,7 @@ export class UdemyService {
     );
   }
 
-  downloadCourse(id: number, title: string): Observable<DownloadProgress> {
+  downloadCourse(id: number, title: string, imageUrl: string): Observable<DownloadProgress> {
     let totalFiles: number = 0;
     let currentFile: number = 0;
     const downloadProgress: BehaviorSubject<DownloadProgress> = new BehaviorSubject<DownloadProgress>(null);
@@ -214,6 +214,12 @@ export class UdemyService {
     } else {
       this.fs.mkdirSync(courseDir);
       console.log(`Create directory ${courseDir}`);
+    }
+    if (imageUrl !== null) {
+      totalFiles++;
+      const extIdx: number = imageUrl.lastIndexOf('.');
+      const ext: string = imageUrl.slice(extIdx, imageUrl.length);
+      downloadSaveAssets.next(new DownloadableAssetMetadata(imageUrl, `${courseDir}/logo${ext}`));
     }
     this.getCourse(id)
     .subscribe(course => {
@@ -303,7 +309,7 @@ export class UdemyService {
           let maxIdx: number = step;
           const writeStream: WriteStream = this.fs.createWriteStream(value.path);
           for (let i: number = 0; i <= iterations; i++) {
-            writeStream.write(new Buffer(value.data.slice(minIdx, maxIdx)));
+            writeStream.write(Buffer.from(value.data.slice(minIdx, maxIdx)));
             minIdx = minIdx + step;
             maxIdx = maxIdx + step;
           }
