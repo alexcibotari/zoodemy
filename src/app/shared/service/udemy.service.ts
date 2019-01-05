@@ -3,7 +3,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {AuthService} from './auth.service';
 import {Result} from '../model/result.model';
 import {Course} from '../model/course.model';
-import {BehaviorSubject, interval, Observable, of, throwError} from 'rxjs';
+import {BehaviorSubject, EMPTY, interval, Observable, of, throwError} from 'rxjs';
 import {CourseBlock} from '../model/course-block.model';
 import {Lecture} from '../model/lecture.model';
 import {ElectronService} from 'ngx-electron';
@@ -143,8 +143,7 @@ export class UdemyService {
           observe: 'response'
         })
     .pipe(
-        retryWhen((errors) => {
-          console.log(errors);
+        retryWhen(() => {
           return interval(environment.download.interval).pipe(
               flatMap(count => count === environment.download.retry ? throwError(`Error during download of ${url} for ${path}`) : of(count))
           );
@@ -281,7 +280,7 @@ export class UdemyService {
             }
           }
       );
-      downloadProgress.next(new DownloadProgress(totalFiles));
+      downloadProgress.next(new DownloadProgress(totalFiles, currentFile));
     });
     // Save Articles
     saveArticles.asObservable()
@@ -298,7 +297,13 @@ export class UdemyService {
     .pipe(
         filter(value => value != null),
         concatMap((value: DownloadableAssetMetadata) => {
-          return this.downloadAsset(value.url, value.path);
+          if (this.fs.existsSync(value.path)) {
+            console.log(`File already exist : ${value.path}`);
+            downloadProgress.next(new DownloadProgress(totalFiles, ++currentFile));
+            return EMPTY;
+          } else {
+            return this.downloadAsset(value.url, value.path);
+          }
         })
     )
     .subscribe((value: AssetMetadata<ArrayBuffer>) => {
@@ -323,16 +328,16 @@ export class UdemyService {
           downloadProgress.next(new DownloadProgress(totalFiles, ++currentFile));
         },
         (error) => {
-          console.log(`${title}' Error during downloading.`);
+          console.log(`'${title}' Error during downloading.`);
           console.log(error);
           this.snackBar.open(
-              `${title}' Error during downloading.`,
+              `'${title}' Error during downloading.`,
               '',
               {
                 duration: environment.message.duration
               }
           );
-          downloadProgress.next(new DownloadProgress(totalFiles, ++currentFile, true));
+          downloadProgress.next(new DownloadProgress(totalFiles, currentFile, true));
         },
         () => {
           console.log(`'${title}' Download completed.`);
