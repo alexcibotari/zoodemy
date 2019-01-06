@@ -11,6 +11,7 @@ import {CoursesComponent} from './courses/courses.component';
 import { CourseDetailComponent } from './course-detail/course-detail.component';
 import {NgxElectronModule} from 'ngx-electron';
 import { SettingsComponent } from './settings/settings.component';
+import {MAT_SNACK_BAR_DEFAULT_OPTIONS} from '@angular/material';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,9 @@ import { SettingsComponent } from './settings/settings.component';
     AppRoutingModule,
     SharedModule
   ],
-  providers: [],
+  providers: [
+    {provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: {duration: 2500, horizontalPosition: 'right'}}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

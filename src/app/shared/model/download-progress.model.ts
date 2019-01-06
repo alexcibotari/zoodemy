@@ -16,6 +16,6 @@ export class DownloadProgress {
   }
 
   get isDone(): boolean {
-    return this.totalFiles === this.currentFile;
+    return this.totalFiles > 0 && this.totalFiles === this.currentFile;
   }
 }

@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {UdemyService} from '../shared/service/udemy.service';
 import {Course} from '../shared/model/course.model';
 import {CourseDownloadProgress} from '../shared/model/course-download-progress.model';
+import {CourseMetadata} from '../shared/model/course-metadata.model';
 
 @Component({
   selector: 'zd-courses',
@@ -31,6 +32,10 @@ export class CoursesComponent implements OnInit {
     .subscribe(value => {
       this.progress.progress = value;
     });
+  }
+
+  getCourseMetadata(title: string): CourseMetadata {
+    return this.udemyService.getCourseMetadata(title);
   }
 
 }

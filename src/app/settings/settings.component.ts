@@ -3,7 +3,6 @@ import {SettingsService} from '../shared/service/settings.service';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {VideoQuality} from '../shared/model/video-quality.model';
 import {MatSnackBar} from '@angular/material';
-import {environment} from '../../environments/environment';
 
 @Component({
   selector: 'zd-settings',
@@ -34,10 +33,7 @@ export class SettingsComponent implements OnInit {
     this.settingsService.setSettings(this.settingsForm.value);
     this.snackBar.open(
         `Saved.`,
-        '',
-        {
-          duration: environment.message.duration
-        }
+        ''
     );
   }
 

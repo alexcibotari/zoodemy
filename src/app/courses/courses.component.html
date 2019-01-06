@@ -4,18 +4,39 @@
       <mat-card-content>
         <img mat-card-image [src]="course.image_480x270" [alt]="course.title">
         <mat-card-title class="content">{{course.title}}</mat-card-title>
-          <div *ngFor="let user of course.visible_instructors">
-            {{user.display_name}}
-          </div>
+        <div *ngFor="let user of course.visible_instructors">
+          {{user.display_name}}
+        </div>
         <br/>
         <mat-progress-bar mode="determinate" [value]="course.completion_ratio"></mat-progress-bar>
         {{course.completion_ratio}}% Complete
       </mat-card-content>
       <mat-card-actions>
-        <button mat-icon-button (click)="download(course.id, course.title, course.image_480x270)"
-                [disabled]="progress">
-          <mat-icon>cloud_download</mat-icon>
-        </button>
+        <ng-container *ngIf="getCourseMetadata(course.title); let metadata; else downloadContainer">
+          <button mat-icon-button *ngIf="metadata.complete" color="primary"
+                  matTooltip="Completely downloaded.">
+            <mat-icon>cloud_done</mat-icon>
+          </button>
+          <button mat-icon-button *ngIf="metadata.complete"
+                  (click)="download(course.id, course.title, course.image_480x270)"
+                  [disabled]="progress" color="primary"
+                  matTooltip="Check for updates.">
+            <mat-icon>sync</mat-icon>
+          </button>
+          <button mat-icon-button *ngIf="!metadata.complete"
+                  (click)="download(course.id, course.title, course.image_480x270)"
+                  [disabled]="progress" color="primary"
+                  matTooltip="Recheck for errors.">
+            <mat-icon>sync_problem</mat-icon>
+          </button>
+        </ng-container>
+        <ng-template #downloadContainer>
+          <button mat-icon-button (click)="download(course.id, course.title, course.image_480x270)"
+                  [disabled]="progress" color="primary"
+                  matTooltip="Downloaded course into the application home folder.">
+            <mat-icon>cloud_download</mat-icon>
+          </button>
+        </ng-template>
         <button mat-icon-button routerLink="/courses/{{course.id}}">
           <mat-icon>web_asset</mat-icon>
         </button>
@@ -41,12 +62,14 @@
           <mat-progress-bar *ngIf="progress" mode="indeterminate"></mat-progress-bar>
         </ng-template>
       </mat-card-subtitle>
-      <mat-card-actions *ngIf="progress.progress && progress.progress.isDone">
-        <button mat-stroked-button (click)="progress = null">Close</button>
-      </mat-card-actions>
-      <mat-card-actions *ngIf="progress.progress && progress.progress.error">
-        <button mat-stroked-button (click)="download(progress.id, progress.title, progress.image)">
+      <mat-card-actions *ngIf="progress.progress">
+        <button mat-stroked-button *ngIf="progress.progress.error"
+                (click)="download(progress.id, progress.title, progress.image)">
           Retry
+        </button>
+        <button mat-stroked-button *ngIf="progress.progress.isDone || progress.progress.error"
+                (click)="progress = null">
+          Close
         </button>
       </mat-card-actions>
     </mat-card-header>
