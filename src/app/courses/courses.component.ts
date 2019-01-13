@@ -10,7 +10,8 @@ import {CourseMetadata} from '../shared/model/course-metadata.model';
   styleUrls: ['./courses.component.scss']
 })
 export class CoursesComponent implements OnInit {
-
+  loading: boolean = true;
+  isArchived: boolean = false;
   courses: Array<Course> = [];
   progress: CourseDownloadProgress;
 
@@ -20,8 +21,15 @@ export class CoursesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.udemyService.getSubscribedCourses()
+    this.fetchCourses();
+  }
+
+  fetchCourses(): void {
+    this.loading = true;
+    this.courses = [];
+    this.udemyService.getSubscribedCourses(this.isArchived)
     .subscribe(value => {
+      this.loading = false;
       this.courses = value.results;
     });
   }
@@ -30,6 +38,7 @@ export class CoursesComponent implements OnInit {
     this.progress = new CourseDownloadProgress(id, title, imageUrl);
     this.udemyService.downloadCourse(id, title, imageUrl)
     .subscribe(value => {
+      console.log(value);
       this.progress.progress = value;
     });
   }

@@ -1,14 +1,14 @@
 export class DownloadProgress {
   constructor(
-      public totalFiles: number = 0,
-      public currentFile: number = 0,
-      public error: boolean = false
+      public total: number = 0,
+      public downloaded: number = 0,
+      public errors: number = 0
   ) {
 
   }
 
   get percentageDecimal(): number {
-    return this.currentFile / this.totalFiles;
+    return this.downloaded / this.total;
   }
 
   get percentage(): number {
@@ -16,6 +16,6 @@ export class DownloadProgress {
   }
 
   get isDone(): boolean {
-    return this.totalFiles > 0 && this.totalFiles === this.currentFile;
+    return this.total > 1 && this.total === (this.downloaded + this.errors);
   }
 }

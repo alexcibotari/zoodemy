@@ -3,25 +3,35 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {AuthService} from './auth.service';
 import {Result} from '../model/result.model';
 import {Course} from '../model/course.model';
-import {BehaviorSubject, EMPTY, interval, Observable, of, throwError} from 'rxjs';
+import {BehaviorSubject, EMPTY, Observable, of} from 'rxjs';
 import {CourseBlock} from '../model/course-block.model';
 import {Lecture} from '../model/lecture.model';
 import {ElectronService} from 'ngx-electron';
 import * as sanitize from 'sanitize-filename';
 import {AssetType} from '../model/asset-type.model';
-import {concatMap, filter, flatMap, map, retryWhen, tap} from 'rxjs/operators';
+import {catchError, concatMap, filter, flatMap, map, tap} from 'rxjs/operators';
 import {MatSnackBar} from '@angular/material';
-import {environment} from '../../../environments/environment';
 import {WriteStream} from 'fs';
 import {SettingsService} from './settings.service';
 import {DownloadProgress} from '../model/download-progress.model';
 import {FileMetadata} from '../model/file-metadata.model';
 import {VideoQuality} from '../model/video-quality.model';
 import {CourseMetadata} from '../model/course-metadata.model';
+import {Asset} from '../model/asset.model';
 
 class AssetDownloadable {
   constructor(
       public main: DownloadableAssetMetadata,
+      public assets: DownloadableAssetMetadata[] = []
+  ) {
+
+  }
+
+}
+
+class ArticleDownloadable {
+  constructor(
+      public main: AssetMetadata<string>,
       public assets: DownloadableAssetMetadata[] = []
   ) {
 
@@ -72,10 +82,15 @@ export class UdemyService {
     }
   }
 
-  getSubscribedCourses(): Observable<Result<Course>> {
+  getSubscribedCourses(isArchived: boolean = false): Observable<Result<Course>> {
+    let params: string = '';
+    if (isArchived) {
+      params = params + '&is_archived=true';
+    }
+
     return this.http.get<Result<Course>>(
         // tslint:disable-next-line
-        `https://${this.auth.getSubDomain()}.udemy.com/api-2.0/users/me/subscribed-courses?page_size=100&fields[course]=@default,completion_ratio,visible_instructors`,
+        `https://${this.auth.getSubDomain()}.udemy.com/api-2.0/users/me/subscribed-courses?page_size=100&fields[course]=@default,completion_ratio,visible_instructors${params}`,
         {
           headers: this.authHeaders
         }
@@ -147,27 +162,41 @@ export class UdemyService {
                 observe: 'response'
               })
           .pipe(
-              retryWhen(() => {
-                return interval(environment.download.interval).pipe(
+              /*retryWhen(() => {
+                return interval(environment.download.interval)
+                .pipe(
                     flatMap(count =>
-                        count === environment.download.retry ? throwError(`Error during download of ${url} for ${path}`) : of(count))
+                        count === environment.download.retry ? throwError(`Error during download of ${url} for ${path}`) : of(count)),
+                    catchError(() => {
+                      console.log('qwe');
+                      return of({a: 'a'});
+                    })
                 );
-              }),
-              map(value => new AssetMetadata<ArrayBuffer>(path, value.body))
+              }),*/
+              map(value => new AssetMetadata<ArrayBuffer>(path, value.body)),
+              catchError(() => {
+                return of(new AssetMetadata<ArrayBuffer>(path, null));
+              })
           );
         })
     );
 
   }
 
-  downloadArticle(courseId: number, lectureId: number, path: string, lectureIdx: number): Observable<AssetMetadata<String>> {
+  downloadArticle(courseId: number, lectureId: number, path: string, lectureIdx: number): Observable<ArticleDownloadable> {
     return this.getLecture(courseId, lectureId)
     .pipe(
         map((lecture: Lecture) => {
-          return <AssetMetadata<String>>{
-            path: `${path}/${this.numberOptimization(lectureIdx)} - ${sanitize(lecture.title)}.html`,
-            data: lecture.asset.body
-          };
+          const downloadable: ArticleDownloadable = new ArticleDownloadable(
+              {
+                path: `${path}/${this.numberOptimization(lectureIdx)} - ${sanitize(lecture.title)}.html`,
+                data: lecture.asset.body
+              }
+          );
+          if (lecture.supplementary_assets && lecture.supplementary_assets.length > 0) {
+            downloadable.assets = this.getAssetsDownloadable(path, lectureIdx, lecture.supplementary_assets);
+          }
+          return downloadable;
         }),
     );
   }
@@ -176,28 +205,60 @@ export class UdemyService {
     return this.getLecture(courseId, lectureId)
     .pipe(
         map((lecture: Lecture) => {
-          let filePath: string = `${path}/${this.numberOptimization(lectureIdx)} - ${sanitize(lecture.title)}`;
-          const extIdx: number = lecture.asset.filename.lastIndexOf('.');
-          const ext: string = lecture.asset.filename.slice(extIdx, lecture.asset.filename.length);
-          const fileUrl: string = this.selectVideo(lecture.asset.download_urls.Video).file;
-          filePath = `${filePath}${ext}`;
-          const downloadable: AssetDownloadable = new AssetDownloadable(new DownloadableAssetMetadata(fileUrl, filePath));
+          const filePath: string = `${path}/${this.numberOptimization(lectureIdx)} - ${sanitize(lecture.title)}`;
+          const video: FileMetadata = this.selectVideo(lecture.asset.download_urls.Video);
+          const extIdx: number = video.type.lastIndexOf('/');
+          const ext: string = video.type.slice(extIdx + 1, video.type.length);
+          const fileUrl: string = video.file;
+          const downloadable: AssetDownloadable = new AssetDownloadable(new DownloadableAssetMetadata(fileUrl, `${filePath}.${ext}`));
           if (lecture.supplementary_assets && lecture.supplementary_assets.length > 0) {
-            lecture.supplementary_assets.forEach(asset => {
-              if (asset.asset_type === AssetType.FILE) {
-                downloadable.assets.push(new DownloadableAssetMetadata(
-                    asset.download_urls.File[0].file,
-                    `${path}/${this.numberOptimization(lectureIdx)} - ${sanitize(asset.title)}`
-                ));
-              } else {
-                console.log('Unknown supplementary_assets');
-                console.log(asset);
-              }
-            });
+            downloadable.assets = this.getAssetsDownloadable(path, lectureIdx, lecture.supplementary_assets);
           }
           return downloadable;
         }),
     );
+  }
+
+  getVideoMashupDownloadable(courseId: number, lectureId: number, path: string, lectureIdx: number): Observable<AssetDownloadable> {
+    return this.getLecture(courseId, lectureId)
+    .pipe(
+        map((lecture: Lecture) => {
+          const filePath: string = `${path}/${this.numberOptimization(lectureIdx)} - ${sanitize(lecture.title)}`;
+          const video: FileMetadata = this.selectVideo(lecture.asset.download_urls.Video);
+          const extIdx: number = video.type.lastIndexOf('/');
+          const ext: string = video.type.slice(extIdx + 1, video.type.length);
+          const fileUrl: string = video.file;
+          const downloadable: AssetDownloadable = new AssetDownloadable(new DownloadableAssetMetadata(fileUrl, `${filePath}.${ext}`));
+          if (lecture.asset.download_urls.Presentation && lecture.asset.download_urls.Presentation.length > 0) {
+            downloadable.assets.push(new DownloadableAssetMetadata(lecture.asset.download_urls.Presentation[0].file, `${filePath}.pdf`));
+          }
+          if (lecture.supplementary_assets && lecture.supplementary_assets.length > 0) {
+            downloadable.assets = downloadable.assets.concat(this.getAssetsDownloadable(path, lectureIdx, lecture.supplementary_assets));
+          }
+          return downloadable;
+        }),
+    );
+  }
+
+  getAssetsDownloadable(path: string, lectureIdx: number, assets: Asset[]): DownloadableAssetMetadata[] {
+    const result: DownloadableAssetMetadata[] = [];
+    assets.forEach(asset => {
+      if (asset.asset_type === AssetType.FILE) {
+        result.push(new DownloadableAssetMetadata(
+            asset.download_urls.File[0].file,
+            `${path}/${this.numberOptimization(lectureIdx)} - ${sanitize(asset.title)}`
+        ));
+      } else if (asset.asset_type === AssetType.E_BOOK) {
+        result.push(new DownloadableAssetMetadata(
+            asset.download_urls['E-Book'][0].file,
+            `${path}/${this.numberOptimization(lectureIdx)} - ${sanitize(asset.title)}`
+        ));
+      } else {
+        console.log('Unknown supplementary_assets');
+        console.log(asset);
+      }
+    });
+    return result;
   }
 
   getEBookDownloadable(courseId: number, lectureId: number, path: string, lectureIdx: number): Observable<AssetDownloadable> {
@@ -214,6 +275,7 @@ export class UdemyService {
   downloadCourse(id: number, title: string, imageUrl: string): Observable<DownloadProgress> {
     let totalFiles: number = 0;
     let currentFile: number = 0;
+    let fileErrors: number = 0;
     const downloadProgress: BehaviorSubject<DownloadProgress> = new BehaviorSubject<DownloadProgress>(null);
     const downloadSaveAssets: BehaviorSubject<DownloadableAssetMetadata> = new BehaviorSubject<DownloadableAssetMetadata>(null);
     const saveArticles: BehaviorSubject<AssetMetadata<String>> = new BehaviorSubject<AssetMetadata<String>>(null);
@@ -256,7 +318,7 @@ export class UdemyService {
                   totalFiles++;
                   if (lecture.supplementary_assets && lecture.supplementary_assets.length > 0) {
                     lecture.supplementary_assets
-                    .filter(value => value.asset_type === AssetType.FILE)
+                    .filter(value => value.asset_type !== AssetType.EXTERNAL_LINK)
                     .forEach(() => totalFiles++);
                   }
                   this.getVideoDownloadable(id, lecture.id, chapterPath, lectureIdx++)
@@ -268,6 +330,11 @@ export class UdemyService {
                   });
                 } else if (lecture.asset.asset_type === AssetType.E_BOOK) {
                   totalFiles++;
+                  if (lecture.supplementary_assets && lecture.supplementary_assets.length > 0) {
+                    lecture.supplementary_assets
+                    .filter(value => value.asset_type !== AssetType.EXTERNAL_LINK)
+                    .forEach(() => totalFiles++);
+                  }
                   this.getEBookDownloadable(id, lecture.id, chapterPath, lectureIdx++)
                   .subscribe(value => {
                     if (value.main) {
@@ -276,13 +343,36 @@ export class UdemyService {
                   });
                 } else if (lecture.asset.asset_type === AssetType.ARTICLE) {
                   totalFiles++;
+                  if (lecture.supplementary_assets && lecture.supplementary_assets.length > 0) {
+                    lecture.supplementary_assets
+                    .filter(value => value.asset_type !== AssetType.EXTERNAL_LINK)
+                    .forEach(() => totalFiles++);
+                  }
                   this.downloadArticle(id, lecture.id, chapterPath, lectureIdx++)
-                  .subscribe(value => saveArticles.next(value));
+                  .subscribe(value => {
+                    if (value.main) {
+                      saveArticles.next(value.main);
+                      value.assets.forEach(asset => downloadSaveAssets.next(asset));
+                    }
+                  });
+                } else if (lecture.asset.asset_type === AssetType.VIDEO_MASHUP) {
+                  totalFiles = totalFiles + 2;
+                  if (lecture.supplementary_assets && lecture.supplementary_assets.length > 0) {
+                    lecture.supplementary_assets
+                    .filter(value => value.asset_type !== AssetType.EXTERNAL_LINK)
+                    .forEach(() => totalFiles++);
+                  }
+                  this.getVideoMashupDownloadable(id, lecture.id, chapterPath, lectureIdx++)
+                  .subscribe(value => {
+                    if (value.main) {
+                      downloadSaveAssets.next(value.main);
+                      value.assets.forEach(asset => downloadSaveAssets.next(asset));
+                    }
+                  });
                 } else {
                   console.log('unknown lecture');
                   console.log(lecture);
                 }
-
                 break;
               case 'quiz' :
                 console.log(`\t${block.id} - ${block.title}`);
@@ -290,7 +380,7 @@ export class UdemyService {
             }
           }
       );
-      downloadProgress.next(new DownloadProgress(totalFiles, currentFile));
+      downloadProgress.next(new DownloadProgress(totalFiles, currentFile, fileErrors));
     });
     // Save Articles
     saveArticles.asObservable()
@@ -304,7 +394,7 @@ export class UdemyService {
         this.fs.writeFileSync(value.path, value.data);
         console.log(`Saved lecture : ${value.path}`);
       }
-      downloadProgress.next(new DownloadProgress(totalFiles, ++currentFile));
+      downloadProgress.next(new DownloadProgress(totalFiles, ++currentFile, fileErrors));
     });
     // Download and Save Assets
     downloadSaveAssets.asObservable()
@@ -313,7 +403,7 @@ export class UdemyService {
         concatMap((value: DownloadableAssetMetadata) => {
           if (this.fs.existsSync(value.path)) {
             console.log(`File already exist : ${value.path}`);
-            downloadProgress.next(new DownloadProgress(totalFiles, ++currentFile));
+            downloadProgress.next(new DownloadProgress(totalFiles, ++currentFile, fileErrors));
             return EMPTY;
           } else {
             return this.downloadAsset(value.url, value.path);
@@ -321,25 +411,29 @@ export class UdemyService {
         })
     )
     .subscribe((value: AssetMetadata<ArrayBuffer>) => {
-          console.log(`Download lecture : ${value.path}`);
-          const step: number = 1024 * 1024;
-          const iterations: number = value.data.byteLength / step;
-          let minIdx: number = 0;
-          let maxIdx: number = step;
-          const writeStream: WriteStream = this.fs.createWriteStream(value.path);
-          for (let i: number = 0; i <= iterations; i++) {
-            writeStream.write(Buffer.from(value.data.slice(minIdx, maxIdx)));
-            minIdx = minIdx + step;
-            maxIdx = maxIdx + step;
+          if (value.data != null) {
+            console.log(`Download lecture : ${value.path}`);
+            const step: number = 1024 * 1024;
+            const iterations: number = value.data.byteLength / step;
+            let minIdx: number = 0;
+            let maxIdx: number = step;
+            const writeStream: WriteStream = this.fs.createWriteStream(value.path);
+            for (let i: number = 0; i <= iterations; i++) {
+              writeStream.write(Buffer.from(value.data.slice(minIdx, maxIdx)));
+              minIdx = minIdx + step;
+              maxIdx = maxIdx + step;
+            }
+            if (maxIdx < value.data.byteLength - 1) {
+              writeStream.write(Buffer.from(value.data.slice(maxIdx)));
+            }
+            writeStream.on('finish', () => {
+              console.log(`Saved lecture : ${value.path}`);
+            });
+            writeStream.end();
+            downloadProgress.next(new DownloadProgress(totalFiles, ++currentFile, fileErrors));
+          } else {
+            downloadProgress.next(new DownloadProgress(totalFiles, currentFile, ++fileErrors));
           }
-          if (maxIdx < value.data.byteLength - 1) {
-            writeStream.write(Buffer.from(value.data.slice(maxIdx)));
-          }
-          writeStream.on('finish', () => {
-            console.log(`Saved lecture : ${value.path}`);
-          });
-          writeStream.end();
-          downloadProgress.next(new DownloadProgress(totalFiles, ++currentFile));
         },
         (error) => {
           console.log(`'${title}' Error during downloading.`);
@@ -348,7 +442,7 @@ export class UdemyService {
               `'${title}' Error during downloading.`,
               'Close'
           );
-          downloadProgress.next(new DownloadProgress(totalFiles, currentFile, true));
+          downloadProgress.next(new DownloadProgress(totalFiles, currentFile, ++fileErrors));
           this.saveCourseMetadata(title, {complete: false});
         },
         () => {
@@ -357,16 +451,21 @@ export class UdemyService {
               `'${title}' Download completed.`,
               'Close'
           );
-          this.saveCourseMetadata(title, {complete: true});
+          if (fileErrors === 0) {
+            this.saveCourseMetadata(title, {complete: true});
+          } else {
+            this.saveCourseMetadata(title, {complete: false});
+          }
         });
     return downloadProgress.asObservable()
     .pipe(
         filter(value => value != null),
         tap(next => {
           // skip logo file
-          if (next.totalFiles > 1 && next.isDone) {
+          if (next.total > 1 && next.isDone) {
             downloadSaveAssets.complete();
             saveArticles.complete();
+            console.log('Done');
           }
         })
     );

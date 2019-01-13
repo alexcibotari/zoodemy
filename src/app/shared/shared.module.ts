@@ -12,6 +12,7 @@ import {
   MatListModule,
   MatProgressBarModule,
   MatSelectModule,
+  MatSlideToggleModule,
   MatSnackBarModule,
   MatToolbarModule,
   MatTooltipModule,
@@ -33,6 +34,7 @@ const MATERIAL_MODULES: any[] = [
   MatListModule,
   MatProgressBarModule,
   MatSelectModule,
+  MatSlideToggleModule,
   MatSnackBarModule,
   MatToolbarModule,
   MatTooltipModule

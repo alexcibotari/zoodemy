@@ -1,3 +1,7 @@
+<mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+<mat-toolbar>
+  <mat-slide-toggle [(ngModel)]="isArchived" (change)="fetchCourses()">Archived</mat-slide-toggle>
+</mat-toolbar>
 <div class="box" style="height: auto;">
   <div gdGap="10px" gdColumns="repeat(auto-fill, minmax(200px, 1fr))">
     <mat-card *ngFor="let course of courses">
@@ -52,10 +56,10 @@
       <mat-card-subtitle>
         <mat-progress-bar *ngIf="progress.progress; else indeterminate;" mode="determinate"
                           [value]="progress.progress.percentage"></mat-progress-bar>
-        <mat-hint *ngIf="progress.progress">Downloaded {{progress.progress.currentFile}}
-          from {{progress.progress.totalFiles}} files.
+        <mat-hint *ngIf="progress.progress">Downloaded {{progress.progress.downloaded}}
+          from {{progress.progress.total}} files.
         </mat-hint>
-        <mat-error *ngIf="progress.progress && progress.progress.error">Error during downloading.
+        <mat-error *ngIf="progress.progress && progress.progress.errors > 0"> {{progress.progress.errors}} Errors during downloading.
           Please try again.
         </mat-error>
         <ng-template #indeterminate>
@@ -63,11 +67,11 @@
         </ng-template>
       </mat-card-subtitle>
       <mat-card-actions *ngIf="progress.progress">
-        <button mat-stroked-button *ngIf="progress.progress.error"
+        <button mat-stroked-button *ngIf="progress.progress.isDone && progress.progress.errors > 0"
                 (click)="download(progress.id, progress.title, progress.image)">
           Retry
         </button>
-        <button mat-stroked-button *ngIf="progress.progress.isDone || progress.progress.error"
+        <button mat-stroked-button *ngIf="progress.progress.isDone"
                 (click)="progress = null">
           Close
         </button>

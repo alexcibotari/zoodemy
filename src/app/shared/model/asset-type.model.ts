@@ -3,5 +3,6 @@ export enum AssetType {
   ARTICLE = 'Article',
   FILE = 'File',
   E_BOOK = 'E-Book',
-  LINK = 'ExternalLink'
+  EXTERNAL_LINK = 'ExternalLink',
+  VIDEO_MASHUP = 'VideoMashup'
 }
