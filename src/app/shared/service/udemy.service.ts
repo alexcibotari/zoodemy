@@ -459,7 +459,7 @@ export class UdemyService {
         });
     return downloadProgress.asObservable()
     .pipe(
-        filter(value => value != null),
+        filter(value => value != null && value.downloaded > 1),
         tap(next => {
           // skip logo file
           if (next.total > 1 && next.isDone) {
