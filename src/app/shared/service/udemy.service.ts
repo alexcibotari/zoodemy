@@ -246,15 +246,15 @@ export class UdemyService {
       if (asset.asset_type === AssetType.FILE) {
         result.push(new DownloadableAssetMetadata(
             asset.download_urls.File[0].file,
-            `${path}/${this.numberOptimization(lectureIdx)} - ${sanitize(asset.title)}`
+            `${path}/${this.numberOptimization(lectureIdx)} - ${sanitize(asset.filename)}`
         ));
       } else if (asset.asset_type === AssetType.E_BOOK) {
         result.push(new DownloadableAssetMetadata(
             asset.download_urls['E-Book'][0].file,
-            `${path}/${this.numberOptimization(lectureIdx)} - ${sanitize(asset.title)}`
+            `${path}/${this.numberOptimization(lectureIdx)} - ${sanitize(asset.filename)}`
         ));
       } else {
-        console.log('Unknown supplementary_assets');
+        console.log('%c Unknown supplementary_assets', 'color:blue;');
         console.log(asset);
       }
     });
@@ -370,7 +370,7 @@ export class UdemyService {
                     }
                   });
                 } else {
-                  console.log('unknown lecture');
+                  console.log('%c unknown lecture', 'color:blue;');
                   console.log(lecture);
                 }
                 break;
