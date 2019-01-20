@@ -1,6 +1,6 @@
 {
   "name": "zoodemy",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A minimalistic Udemy offline courses downloader and player. Built on Electron, Angular and Material for frontend.",
   "author": {
     "name": "Alexandru Cibotari",
@@ -60,7 +60,7 @@
     "@angular/flex-layout": "^7.0.0-beta.23",
     "@angular/language-service": "^7.2.1",
     "@types/electron": "~1.6.10",
-    "@types/jasmine": "~3.3.5",
+    "@types/jasmine": "^3.3.7",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~10.12.18",
     "@types/sanitize-filename": "^1.1.28",
@@ -77,6 +77,6 @@
     "protractor": "^5.4.2",
     "ts-node": "~7.0.0",
     "tslint": "~5.12.1",
-    "typescript": "~3.2.2"
+    "typescript": "^3.2.4"
   }
 }
