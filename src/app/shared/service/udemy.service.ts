@@ -485,8 +485,9 @@ export class UdemyService {
     if (this.settingsService.getIncludeInstructorInPath()) {
       this.makeDir(`${this.settingsService.getDownloadPath()}/${sanitize(instructors[0].display_name)}`);
       this.makeDir(`${this.settingsService.getDownloadPath()}/${sanitize(instructors[0].display_name)}/${sanitize(title)}`);
+    } else {
+      this.makeDir(`${this.settingsService.getDownloadPath()}/${sanitize(title)}`);
     }
-    this.makeDir(`${this.settingsService.getDownloadPath()}/${sanitize(title)}`);
   }
 
   getCourseMetadata(path: string): CourseMetadata | null {
