@@ -16,26 +16,26 @@
         {{course.completion_ratio}}% Complete
       </mat-card-content>
       <mat-card-actions>
-        <ng-container *ngIf="getCourseMetadata(course.title); let metadata; else downloadContainer">
+        <ng-container *ngIf="getCourseMetadata(course.title, course.visible_instructors); let metadata; else downloadContainer">
           <button mat-icon-button *ngIf="metadata.complete" color="primary"
                   matTooltip="Completely downloaded.">
             <mat-icon>cloud_done</mat-icon>
           </button>
           <button mat-icon-button *ngIf="metadata.complete"
-                  (click)="download(course.id, course.title, course.image_480x270)"
+                  (click)="download(course.id, course.title, course.image_480x270, course.visible_instructors)"
                   [disabled]="progress" color="primary"
                   matTooltip="Check for updates.">
             <mat-icon>sync</mat-icon>
           </button>
           <button mat-icon-button *ngIf="!metadata.complete"
-                  (click)="download(course.id, course.title, course.image_480x270)"
+                  (click)="download(course.id, course.title, course.image_480x270, course.visible_instructors)"
                   [disabled]="progress" color="primary"
                   matTooltip="Recheck for errors.">
             <mat-icon>sync_problem</mat-icon>
           </button>
         </ng-container>
         <ng-template #downloadContainer>
-          <button mat-icon-button (click)="download(course.id, course.title, course.image_480x270)"
+          <button mat-icon-button (click)="download(course.id, course.title, course.image_480x270, course.visible_instructors)"
                   [disabled]="progress" color="primary"
                   matTooltip="Downloaded course into the application home folder.">
             <mat-icon>cloud_download</mat-icon>
@@ -53,6 +53,7 @@
     <mat-card-header>
       <img mat-card-avatar [src]="progress.image" [alt]="progress.title"/>
       <mat-card-title>{{progress.title}}</mat-card-title>
+      <mat-card-subtitle>{{progress.instructors[0].display_name}}</mat-card-subtitle>
       <mat-card-subtitle>
         <mat-progress-bar *ngIf="progress.progress; else indeterminate;" mode="determinate"
                           [value]="progress.progress.percentage"></mat-progress-bar>
@@ -68,7 +69,7 @@
       </mat-card-subtitle>
       <mat-card-actions *ngIf="progress.progress">
         <button mat-stroked-button *ngIf="progress.progress.isDone && progress.progress.errors > 0"
-                (click)="download(progress.id, progress.title, progress.image)">
+                (click)="download(progress.id, progress.title, progress.image, progress.instructors)">
           Retry
         </button>
         <button mat-stroked-button *ngIf="progress.progress.isDone"

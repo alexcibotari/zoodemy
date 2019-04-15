@@ -22,6 +22,14 @@ export class SettingsService {
     }
   }
 
+  getIncludeInstructorInPath(): boolean {
+    if (this.settings && this.settings.includeInstructorInPath) {
+      return this.settings.includeInstructorInPath;
+    } else {
+      return false;
+    }
+  }
+
   getVideoQuality(): VideoQuality {
     if (this.settings && this.settings.videoQuality) {
       return this.settings.videoQuality;

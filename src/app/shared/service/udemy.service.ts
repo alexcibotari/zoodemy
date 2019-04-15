@@ -18,6 +18,7 @@ import {FileMetadata} from '../model/file-metadata.model';
 import {VideoQuality} from '../model/video-quality.model';
 import {CourseMetadata} from '../model/course-metadata.model';
 import {Asset} from '../model/asset.model';
+import {User} from '../model/user.model';
 
 class AssetDownloadable {
   constructor(
@@ -82,7 +83,7 @@ export class UdemyService {
     }
   }
 
-  getSubscribedCourses(isArchived: boolean = false): Observable<Result<Course>> {
+  getSubscribedCourses(isArchived: boolean = false, page: number = 1): Observable<Result<Course>> {
     let params: string = '';
     if (isArchived) {
       params = params + '&is_archived=true';
@@ -90,7 +91,7 @@ export class UdemyService {
 
     return this.http.get<Result<Course>>(
         // tslint:disable-next-line
-        `https://${this.auth.getSubDomain()}.udemy.com/api-2.0/users/me/subscribed-courses?page_size=100&fields[course]=@default,completion_ratio,visible_instructors${params}`,
+        `https://${this.auth.getSubDomain()}.udemy.com/api-2.0/users/me/subscribed-courses?page_size=100&page=${page}&fields[course]=@default,completion_ratio,visible_instructors${params}`,
         {
           headers: this.authHeaders
         }
@@ -272,20 +273,15 @@ export class UdemyService {
     );
   }
 
-  downloadCourse(id: number, title: string, imageUrl: string): Observable<DownloadProgress> {
+  downloadCourse(id: number, title: string, imageUrl: string, instructors: User[]): Observable<DownloadProgress> {
     let totalFiles: number = 0;
     let currentFile: number = 0;
     let fileErrors: number = 0;
     const downloadProgress: BehaviorSubject<DownloadProgress> = new BehaviorSubject<DownloadProgress>(null);
     const downloadSaveAssets: BehaviorSubject<DownloadableAssetMetadata> = new BehaviorSubject<DownloadableAssetMetadata>(null);
     const saveArticles: BehaviorSubject<AssetMetadata<String>> = new BehaviorSubject<AssetMetadata<String>>(null);
-    const coursePath: string = this.getCoursePath(title);
-    if (this.fs.existsSync(coursePath)) {
-      console.log(`Directory already exist ${coursePath}`);
-    } else {
-      this.fs.mkdirSync(coursePath);
-      console.log(`Create directory ${coursePath}`);
-    }
+    const coursePath: string = this.getCoursePath(title, instructors);
+    this.makeCoursePath(title, instructors);
     if (imageUrl !== null) {
       totalFiles++;
       const extIdx: number = imageUrl.lastIndexOf('.');
@@ -443,7 +439,7 @@ export class UdemyService {
               'Close'
           );
           downloadProgress.next(new DownloadProgress(totalFiles, currentFile, ++fileErrors));
-          this.saveCourseMetadata(title, {complete: false});
+          this.saveCourseMetadata(coursePath, {complete: false});
         },
         () => {
           console.log(`'${title}' Download completed.`);
@@ -452,9 +448,9 @@ export class UdemyService {
               'Close'
           );
           if (fileErrors === 0) {
-            this.saveCourseMetadata(title, {complete: true});
+            this.saveCourseMetadata(coursePath, {complete: true});
           } else {
-            this.saveCourseMetadata(title, {complete: false});
+            this.saveCourseMetadata(coursePath, {complete: false});
           }
         });
     return downloadProgress.asObservable()
@@ -478,20 +474,40 @@ export class UdemyService {
     return idx.toString();
   }
 
-  private getCoursePath(title: string): string {
+  public getCoursePath(title: string, instructors: User[]): string {
+    if (this.settingsService.getIncludeInstructorInPath()) {
+      return `${this.settingsService.getDownloadPath()}/${sanitize(instructors[0].display_name)}/${sanitize(title)}`;
+    }
     return `${this.settingsService.getDownloadPath()}/${sanitize(title)}`;
   }
 
-  getCourseMetadata(title: string): CourseMetadata | null {
-    const metadataPath: string = `${this.getCoursePath(title)}/metadata.json`;
+  private makeCoursePath(title: string, instructors: User[]): void {
+    if (this.settingsService.getIncludeInstructorInPath()) {
+      this.makeDir(`${this.settingsService.getDownloadPath()}/${sanitize(instructors[0].display_name)}`);
+      this.makeDir(`${this.settingsService.getDownloadPath()}/${sanitize(instructors[0].display_name)}/${sanitize(title)}`);
+    }
+    this.makeDir(`${this.settingsService.getDownloadPath()}/${sanitize(title)}`);
+  }
+
+  getCourseMetadata(path: string): CourseMetadata | null {
+    const metadataPath: string = `${path}/metadata.json`;
     if (this.fs.existsSync(metadataPath)) {
       return JSON.parse(this.fs.readFileSync(metadataPath));
     }
     return null;
   }
 
-  saveCourseMetadata(title: string, metadata: CourseMetadata): void {
-    const metadataPath: string = `${this.getCoursePath(title)}/metadata.json`;
+  saveCourseMetadata(path: string, metadata: CourseMetadata): void {
+    const metadataPath: string = `${path}/metadata.json`;
     this.fs.writeFileSync(metadataPath, JSON.stringify(metadata));
+  }
+
+  private makeDir(path: string): void {
+    if (this.fs.existsSync(path)) {
+      console.log(`Directory already exist ${path}`);
+    } else {
+      this.fs.mkdirSync(path);
+      console.log(`Create directory ${path}`);
+    }
   }
 }

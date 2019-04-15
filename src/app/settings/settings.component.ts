@@ -15,6 +15,7 @@ export class SettingsComponent implements OnInit {
 
   settingsForm: FormGroup = new FormGroup({
     downloadPath: new FormControl(this.settingsService.getDownloadPath(), Validators.required),
+    includeInstructorInPath: new FormControl(this.settingsService.getIncludeInstructorInPath(), Validators.required),
     downloadAttachments: new FormControl({value: this.settingsService.getDownloadAttachments(), disabled: true}, Validators.required),
     downloadSubtitles: new FormControl({value: this.settingsService.getDownloadSubtitles(), disabled: true}, Validators.required),
     videoQuality: new FormControl({value: this.settingsService.getVideoQuality(), disabled: true}, Validators.required),
