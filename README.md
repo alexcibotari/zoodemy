@@ -11,7 +11,7 @@ A minimalistic Udemy offline courses downloader and player. Built on Electron, A
 | Platform | Link|
 | --- | --- |
 | Windows | [Download](https://github.com/alexcibotari/zoodemy/releases/download/0.2.2/ZooDemy.Setup.0.2.2.exe)|
-| Mac | [Download](https://github.com/alexcibotari/zoodemy/releases/download/0.2.2/ZooDemy-0.2.2-mac.zip)|
+| Mac | [Download](https://github.com/alexcibotari/zoodemy/releases/download/0.2.2/ZooDemy-0.2.2.dmg)|
 | Linux | [Download](https://github.com/alexcibotari/zoodemy/releases/download/0.2.2/ZooDemy.0.2.2.AppImage)|
 
 
