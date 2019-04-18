@@ -1,6 +1,6 @@
 {
   "name": "zoodemy",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A minimalistic Udemy offline courses downloader and player. Built on Electron, Angular and Material for frontend.",
   "author": {
     "name": "Alexandru Cibotari",
