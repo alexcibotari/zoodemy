@@ -413,7 +413,12 @@ export class UdemyService {
             const iterations: number = value.data.byteLength / step;
             let minIdx: number = 0;
             let maxIdx: number = step;
-            const writeStream: WriteStream = this.fs.createWriteStream(value.path);
+            const tempPath: string = `${value.path}.zoo`;
+            if (this.fs.existsSync(tempPath)) {
+              console.log(`Delete existing temporary file : ${tempPath}`);
+              this.fs.unlinkSync(tempPath);
+            }
+            const writeStream: WriteStream = this.fs.createWriteStream(tempPath);
             for (let i: number = 0; i <= iterations; i++) {
               writeStream.write(Buffer.from(value.data.slice(minIdx, maxIdx)));
               minIdx = minIdx + step;
@@ -423,6 +428,7 @@ export class UdemyService {
               writeStream.write(Buffer.from(value.data.slice(maxIdx)));
             }
             writeStream.on('finish', () => {
+              this.fs.renameSync(tempPath, value.path);
               console.log(`Saved lecture : ${value.path}`);
             });
             writeStream.end();
