@@ -15,7 +15,7 @@ export class CoursesComponent implements OnInit {
   isArchived: boolean = false;
   courses: Array<Course> = [];
   progress: CourseDownloadProgress;
-
+  search: string = '';
   constructor(
       private readonly udemyService: UdemyService
   ) {

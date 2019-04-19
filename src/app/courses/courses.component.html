@@ -1,10 +1,15 @@
 <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
 <mat-toolbar>
   <mat-slide-toggle [(ngModel)]="isArchived" (change)="fetchCourses()">Archived</mat-slide-toggle>
+  <span class="spacer"></span>
+  <mat-form-field floatLabel="never">
+    <input matInput placeholder="Search" [(ngModel)]="search">
+  </mat-form-field>
+  <span class="spacer"></span>
 </mat-toolbar>
 <div class="box" style="height: auto;">
   <div gdGap="10px" gdColumns="repeat(auto-fill, minmax(200px, 1fr))">
-    <mat-card *ngFor="let course of courses">
+    <mat-card *ngFor="let course of courses | filter: search">
       <mat-card-content>
         <img mat-card-image [src]="course.image_480x270" [alt]="course.title">
         <mat-card-title class="content">{{course.title}}</mat-card-title>

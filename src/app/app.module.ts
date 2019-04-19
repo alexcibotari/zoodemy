@@ -8,10 +8,11 @@ import {MainComponent} from './main/main.component';
 import {DashboardComponent} from './dashboard/dashboard.component';
 import {HttpClientModule} from '@angular/common/http';
 import {CoursesComponent} from './courses/courses.component';
-import { CourseDetailComponent } from './course-detail/course-detail.component';
+import {CourseDetailComponent} from './course-detail/course-detail.component';
 import {NgxElectronModule} from 'ngx-electron';
-import { SettingsComponent } from './settings/settings.component';
+import {SettingsComponent} from './settings/settings.component';
 import {MAT_SNACK_BAR_DEFAULT_OPTIONS} from '@angular/material';
+import {FilterPipe} from './shared/pipe/filter.pipe';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import {MAT_SNACK_BAR_DEFAULT_OPTIONS} from '@angular/material';
     DashboardComponent,
     CoursesComponent,
     CourseDetailComponent,
-    SettingsComponent
+    SettingsComponent,
+    FilterPipe
   ],
   imports: [
     BrowserModule,

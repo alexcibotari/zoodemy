@@ -243,19 +243,28 @@ export class UdemyService {
 
   getAssetsDownloadable(path: string, lectureIdx: number, assets: Asset[]): DownloadableAssetMetadata[] {
     const result: DownloadableAssetMetadata[] = [];
-    assets.forEach(asset => {
+    assets.forEach((asset: Asset, index: number) => {
       if (asset.asset_type === AssetType.FILE) {
         result.push(new DownloadableAssetMetadata(
             asset.download_urls.File[0].file,
-            `${path}/${this.numberOptimization(lectureIdx)} - ${sanitize(asset.filename)}`
+            `${path}/${this.numberOptimization(lectureIdx)}.${this.numberOptimization(index + 1)} - ${sanitize(asset.filename)}`
         ));
       } else if (asset.asset_type === AssetType.E_BOOK) {
         result.push(new DownloadableAssetMetadata(
             asset.download_urls['E-Book'][0].file,
-            `${path}/${this.numberOptimization(lectureIdx)} - ${sanitize(asset.filename)}`
+            `${path}/${this.numberOptimization(lectureIdx)}.${this.numberOptimization(index + 1)} - ${sanitize(asset.filename)}`
+        ));
+      } else if (asset.asset_type === AssetType.VIDEO) {
+        const video: FileMetadata = this.selectVideo(asset.download_urls.Video);
+        const extIdx: number = video.type.lastIndexOf('/');
+        const ext: string = video.type.slice(extIdx + 1, video.type.length);
+        const fileName: string = asset.filename.endsWith(ext) ? asset.filename : `${asset.filename}.${ext}`;
+        result.push(new DownloadableAssetMetadata(
+            video.file,
+            `${path}/${this.numberOptimization(lectureIdx)}.${this.numberOptimization(index + 1)} - ${sanitize(fileName)}`
         ));
       } else {
-        console.log('%c Unknown supplementary_assets', 'color:blue;');
+        console.log(`%c Unknown supplementary_assets of type : ${asset.asset_type}`, 'color:blue;');
         console.log(asset);
       }
     });
@@ -381,7 +390,7 @@ export class UdemyService {
     // Save Articles
     saveArticles.asObservable()
     .pipe(
-        filter(value => value != null)
+        filter(value => value != null),
     )
     .subscribe(value => {
       if (this.fs.existsSync(value.path)) {
