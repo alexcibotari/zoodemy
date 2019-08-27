@@ -13,7 +13,10 @@ function createWindow() {
       {
         width: 2000,
         height: 1200,
-        icon: `${dist}/assets/icons/48x48.png`
+        icon: `${dist}/assets/icons/48x48.png`,
+        webPreferences: {
+          nodeIntegration: true
+        }
       }
   );
 //new BrowserWindow({ fullscreen: true });
