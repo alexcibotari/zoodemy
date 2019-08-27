@@ -7,7 +7,6 @@ import {BehaviorSubject, EMPTY, Observable, of} from 'rxjs';
 import {CourseBlock} from '../model/course-block.model';
 import {Lecture} from '../model/lecture.model';
 import {ElectronService} from 'ngx-electron';
-import * as sanitize from 'sanitize-filename';
 import {AssetType} from '../model/asset-type.model';
 import {catchError, concatMap, filter, flatMap, map, tap} from 'rxjs/operators';
 import {MatSnackBar} from '@angular/material';
@@ -19,6 +18,7 @@ import {VideoQuality} from '../model/video-quality.model';
 import {CourseMetadata} from '../model/course-metadata.model';
 import {Asset} from '../model/asset.model';
 import {User} from '../model/user.model';
+import {OsUtil} from '../../core/os.util';
 
 class AssetDownloadable {
   constructor(
@@ -190,7 +190,7 @@ export class UdemyService {
         map((lecture: Lecture) => {
           const downloadable: ArticleDownloadable = new ArticleDownloadable(
               {
-                path: `${path}/${this.numberOptimization(lectureIdx)} - ${sanitize(lecture.title)}.html`,
+                path: `${path}/${this.numberOptimization(lectureIdx)} - ${OsUtil.sanitize(lecture.title)}.html`,
                 data: lecture.asset.body
               }
           );
@@ -206,7 +206,7 @@ export class UdemyService {
     return this.getLecture(courseId, lectureId)
     .pipe(
         map((lecture: Lecture) => {
-          const filePath: string = `${path}/${this.numberOptimization(lectureIdx)} - ${sanitize(lecture.title)}`;
+          const filePath: string = `${path}/${this.numberOptimization(lectureIdx)} - ${OsUtil.sanitize(lecture.title)}`;
           const video: FileMetadata = this.selectVideo(lecture.asset.download_urls.Video);
           const extIdx: number = video.type.lastIndexOf('/');
           const ext: string = video.type.slice(extIdx + 1, video.type.length);
@@ -224,7 +224,7 @@ export class UdemyService {
     return this.getLecture(courseId, lectureId)
     .pipe(
         map((lecture: Lecture) => {
-          const filePath: string = `${path}/${this.numberOptimization(lectureIdx)} - ${sanitize(lecture.title)}`;
+          const filePath: string = `${path}/${this.numberOptimization(lectureIdx)} - ${OsUtil.sanitize(lecture.title)}`;
           const video: FileMetadata = this.selectVideo(lecture.asset.download_urls.Video);
           const extIdx: number = video.type.lastIndexOf('/');
           const ext: string = video.type.slice(extIdx + 1, video.type.length);
@@ -247,12 +247,12 @@ export class UdemyService {
       if (asset.asset_type === AssetType.FILE) {
         result.push(new DownloadableAssetMetadata(
             asset.download_urls.File[0].file,
-            `${path}/${this.numberOptimization(lectureIdx)}.${this.numberOptimization(index + 1)} - ${sanitize(asset.filename)}`
+            `${path}/${this.numberOptimization(lectureIdx)}.${this.numberOptimization(index + 1)} - ${OsUtil.sanitize(asset.filename)}`
         ));
       } else if (asset.asset_type === AssetType.E_BOOK) {
         result.push(new DownloadableAssetMetadata(
             asset.download_urls['E-Book'][0].file,
-            `${path}/${this.numberOptimization(lectureIdx)}.${this.numberOptimization(index + 1)} - ${sanitize(asset.filename)}`
+            `${path}/${this.numberOptimization(lectureIdx)}.${this.numberOptimization(index + 1)} - ${OsUtil.sanitize(asset.filename)}`
         ));
       } else if (asset.asset_type === AssetType.VIDEO) {
         const video: FileMetadata = this.selectVideo(asset.download_urls.Video);
@@ -261,7 +261,7 @@ export class UdemyService {
         const fileName: string = asset.filename.endsWith(ext) ? asset.filename : `${asset.filename}.${ext}`;
         result.push(new DownloadableAssetMetadata(
             video.file,
-            `${path}/${this.numberOptimization(lectureIdx)}.${this.numberOptimization(index + 1)} - ${sanitize(fileName)}`
+            `${path}/${this.numberOptimization(lectureIdx)}.${this.numberOptimization(index + 1)} - ${OsUtil.sanitize(fileName)}`
         ));
       } else {
         console.log(`%c Unknown supplementary_assets of type : ${asset.asset_type}`, 'color:blue;');
@@ -275,7 +275,7 @@ export class UdemyService {
     return this.getLecture(courseId, lectureId)
     .pipe(
         map((lecture: Lecture) => {
-          const filePath: string = `${path}/${this.numberOptimization(lectureIdx)} - ${sanitize(lecture.asset.title)}`;
+          const filePath: string = `${path}/${this.numberOptimization(lectureIdx)} - ${OsUtil.sanitize(lecture.asset.title)}`;
           const fileUrl: string = lecture.asset.download_urls['E-Book'][0].file;
           return new AssetDownloadable(new DownloadableAssetMetadata(fileUrl, filePath));
         }),
@@ -303,7 +303,7 @@ export class UdemyService {
       let chapterIdx: number = 1;
       let lectureIdx: number = 1;
       if (course.results[0]._class === 'lecture') {
-        chapterPath = `${coursePath}/${this.numberOptimization(chapterIdx++)} - ${sanitize('Course Introduction')}`;
+        chapterPath = `${coursePath}/${this.numberOptimization(chapterIdx++)} - ${OsUtil.sanitize('Course Introduction')}`;
         if (!this.fs.existsSync(chapterPath)) {
           this.fs.mkdirSync(chapterPath);
         }
@@ -311,7 +311,7 @@ export class UdemyService {
       course.results.forEach((block) => {
             switch (block._class) {
               case 'chapter' :
-                chapterPath = `${coursePath}/${this.numberOptimization(chapterIdx++)} - ${sanitize(block.title)}`;
+                chapterPath = `${coursePath}/${this.numberOptimization(chapterIdx++)} - ${OsUtil.sanitize(block.title)}`;
                 if (!this.fs.existsSync(chapterPath)) {
                   this.fs.mkdirSync(chapterPath);
                 }
@@ -491,17 +491,17 @@ export class UdemyService {
 
   public getCoursePath(title: string, instructors: User[]): string {
     if (this.settingsService.getIncludeInstructorInPath()) {
-      return `${this.settingsService.getDownloadPath()}/${sanitize(instructors[0].display_name)}/${sanitize(title)}`;
+      return `${this.settingsService.getDownloadPath()}/${OsUtil.sanitize(instructors[0].display_name)}/${OsUtil.sanitize(title)}`;
     }
-    return `${this.settingsService.getDownloadPath()}/${sanitize(title)}`;
+    return `${this.settingsService.getDownloadPath()}/${OsUtil.sanitize(title)}`;
   }
 
   private makeCoursePath(title: string, instructors: User[]): void {
     if (this.settingsService.getIncludeInstructorInPath()) {
-      this.makeDir(`${this.settingsService.getDownloadPath()}/${sanitize(instructors[0].display_name)}`);
-      this.makeDir(`${this.settingsService.getDownloadPath()}/${sanitize(instructors[0].display_name)}/${sanitize(title)}`);
+      this.makeDir(`${this.settingsService.getDownloadPath()}/${OsUtil.sanitize(instructors[0].display_name)}`);
+      this.makeDir(`${this.settingsService.getDownloadPath()}/${OsUtil.sanitize(instructors[0].display_name)}/${OsUtil.sanitize(title)}`);
     } else {
-      this.makeDir(`${this.settingsService.getDownloadPath()}/${sanitize(title)}`);
+      this.makeDir(`${this.settingsService.getDownloadPath()}/${OsUtil.sanitize(title)}`);
     }
   }
 

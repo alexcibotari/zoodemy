@@ -24,7 +24,7 @@ export class MainComponent implements OnInit {
   }
 
   reload(): void {
-    location.reload(true);
+    location.reload();
   }
 
 }
