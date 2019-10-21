@@ -8,7 +8,16 @@ import {CourseBlock} from '../model/course-block.model';
 import {Lecture} from '../model/lecture.model';
 import {ElectronService} from 'ngx-electron';
 import {AssetType} from '../model/asset-type.model';
-import {catchError, concatMap, filter, flatMap, map, tap} from 'rxjs/operators';
+import {
+  catchError,
+  concatMap,
+  expand,
+  filter,
+  flatMap,
+  map,
+  reduce,
+  tap
+} from 'rxjs/operators';
 import {MatSnackBar} from '@angular/material';
 import {WriteStream} from 'fs';
 import {SettingsService} from './settings.service';
@@ -95,6 +104,31 @@ export class UdemyService {
         {
           headers: this.authHeaders
         }
+    );
+  }
+
+  getSubscribedCoursesByUrl(url: string): Observable<Result<Course>> {
+    return this.http.get<Result<Course>>(
+        url,
+        {
+          headers: this.authHeaders
+        }
+    );
+  }
+
+  getSubscribedCoursesRecursive(isArchived: boolean = false): Observable<Course[]> {
+    return this.getSubscribedCourses(isArchived)
+    .pipe(
+        expand( (value: Result<Course>) => {
+          console.log(value.next);
+          if (value.next !== null) {
+            return  this.getSubscribedCoursesByUrl(value.next);
+          } else {
+            return EMPTY;
+          }
+        }),
+    map( (value: Result<Course>) => value.results),
+    reduce((acc, x) => acc.concat(x), [])
     );
   }
 

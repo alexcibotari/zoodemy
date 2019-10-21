@@ -28,16 +28,10 @@ export class CoursesComponent implements OnInit {
   fetchCourses(): void {
     this.loading = true;
     this.courses = [];
-    this.udemyService.getSubscribedCourses(this.isArchived)
+    this.udemyService.getSubscribedCoursesRecursive(this.isArchived)
     .subscribe(value => {
+      this.courses  = value;
       this.loading = false;
-      this.courses = value.results;
-      if (value.count > 100) {
-        this.udemyService.getSubscribedCourses(this.isArchived, 2)
-        .subscribe(value2 => {
-          this.courses = this.courses.concat(value2.results);
-        });
-      }
     });
   }
 
