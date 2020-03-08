@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {SettingsService} from '../shared/service/settings.service';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {VideoQuality} from '../shared/model/video-quality.model';
-import {MatSnackBar} from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'zd-settings',

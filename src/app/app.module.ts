@@ -11,7 +11,7 @@ import {CoursesComponent} from './courses/courses.component';
 import {CourseDetailComponent} from './course-detail/course-detail.component';
 import {NgxElectronModule} from 'ngx-electron';
 import {SettingsComponent} from './settings/settings.component';
-import {MAT_SNACK_BAR_DEFAULT_OPTIONS} from '@angular/material';
+import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import {FilterPipe} from './shared/pipe/filter.pipe';
 
 @NgModule({

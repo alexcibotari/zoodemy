@@ -18,7 +18,7 @@ import {
   reduce,
   tap
 } from 'rxjs/operators';
-import {MatSnackBar} from '@angular/material';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {WriteStream} from 'fs';
 import {SettingsService} from './settings.service';
 import {DownloadProgress} from '../model/download-progress.model';
