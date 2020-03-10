@@ -140,5 +140,8 @@
       }
     }
   },
-  "defaultProject": "zoodemy"
+  "defaultProject": "zoodemy",
+  "cli": {
+    "analytics": false
+  }
 }
