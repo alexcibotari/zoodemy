@@ -15,7 +15,8 @@ function createWindow() {
         height: 1200,
         icon: `${dist}/assets/icons/48x48.png`,
         webPreferences: {
-          nodeIntegration: true
+          nodeIntegration: true,
+          enableRemoteModule: true
         }
       }
   );
