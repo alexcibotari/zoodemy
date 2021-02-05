@@ -2,19 +2,13 @@
   <mat-icon>fingerprint</mat-icon>
   <h1>Login</h1>
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" fxLayout="column" fxLayoutAlign="space-around none">
-    <mat-form-field>
-      <input matInput formControlName="login" placeholder="Enter your username or email" type="text">
-    </mat-form-field>
-    <mat-form-field>
-      <input matInput formControlName="password" placeholder="Enter your password" [type]="hide ? 'password' : 'text'">
-      <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-    </mat-form-field>
     <mat-checkbox formControlName="isBusiness">
       Is Business account ?
     </mat-checkbox>
     <mat-form-field *ngIf="loginForm.value.isBusiness">
       <input matInput formControlName="businessName" placeholder="Enter business name" type="text">
     </mat-form-field>
-    <button mat-raised-button color="primary" type="submit" [disabled]="!loginForm.valid">Login</button>
+    <br/>
+    <button mat-raised-button color="primary" type="submit">Login</button>
   </form>
 </div>

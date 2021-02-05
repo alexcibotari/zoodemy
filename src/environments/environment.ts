@@ -6,10 +6,6 @@ export const environment: any = {
   production: false,
   api: {
     udemy: {
-      auth: {
-        type: 'Basic',
-        credentials: 'YWQxMmVjYTljYmUxN2FmYWM2MjU5ZmU1ZDk4NDcxYTY6YTdjNjMwNjQ2MzA4ODI0YjIzMDFmZGI2MGVjZmQ4YTA5NDdlODJkNQ=='
-      },
       subDomain: 'www'
     }
   },

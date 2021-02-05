@@ -241,7 +241,7 @@ export class UdemyService {
     .pipe(
         map((lecture: Lecture) => {
           const filePath: string = `${path}/${this.numberOptimization(lectureIdx)} - ${OsUtil.sanitize(lecture.title)}`;
-          const video: FileMetadata = this.selectVideo(lecture.asset.download_urls.Video);
+          const video: FileMetadata = this.selectVideo(lecture.asset.stream_urls.Video);
           const extIdx: number = video.type.lastIndexOf('/');
           const ext: string = video.type.slice(extIdx + 1, video.type.length);
           const fileUrl: string = video.file;
@@ -259,7 +259,7 @@ export class UdemyService {
     .pipe(
         map((lecture: Lecture) => {
           const filePath: string = `${path}/${this.numberOptimization(lectureIdx)} - ${OsUtil.sanitize(lecture.title)}`;
-          const video: FileMetadata = this.selectVideo(lecture.asset.download_urls.Video);
+          const video: FileMetadata = this.selectVideo(lecture.asset.stream_urls.Video);
           const extIdx: number = video.type.lastIndexOf('/');
           const ext: string = video.type.slice(extIdx + 1, video.type.length);
           const fileUrl: string = video.file;
@@ -328,7 +328,8 @@ export class UdemyService {
     if (imageUrl !== null) {
       totalFiles++;
       const extIdx: number = imageUrl.lastIndexOf('.');
-      const ext: string = imageUrl.slice(extIdx, imageUrl.length);
+      const postExtIdx: number = imageUrl.indexOf('?', extIdx);
+      const ext: string = imageUrl.slice(extIdx, postExtIdx === -1 ? imageUrl.length : postExtIdx);
       downloadSaveAssets.next(new DownloadableAssetMetadata(imageUrl, `${coursePath}/logo${ext}`));
     }
     this.getCourse(id)

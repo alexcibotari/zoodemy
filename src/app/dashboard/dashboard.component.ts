@@ -1,6 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {User} from '../shared/model/user.model';
-import {AuthService} from '../shared/service/auth.service';
 import {OsUtil} from '../core/os.util';
 
 @Component({
@@ -10,15 +8,11 @@ import {OsUtil} from '../core/os.util';
 })
 export class DashboardComponent implements OnInit {
 
-  user: User;
-
   constructor(
-      private readonly auth: AuthService
   ) {
   }
 
   ngOnInit(): void {
-    this.user = this.auth.getUser();
   }
 
   getHomePath(): string {

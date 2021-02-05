@@ -1,47 +1,45 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
 import {Router} from '@angular/router';
-import {User} from '../model/user.model';
 import {environment} from '../../../environments/environment';
+import {ElectronService} from 'ngx-electron';
 
 const SUB_DOMAIN_KEY: string = 'sub_domain';
-const USER_KEY: string = 'user';
+const TOKEN_KEY: string = 'token';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private user: User = null;
+  private token: string = null;
   private authenticated: boolean = false;
   private subDomain: string = null;
-  private readonly headers: HttpHeaders = new HttpHeaders({
-    'Authorization': `${environment.api.udemy.auth.type} ${environment.api.udemy.auth.credentials}`
-  });
 
   constructor(
-      private readonly http: HttpClient,
-      private readonly router: Router
+    private readonly router: Router,
+    private readonly electronService: ElectronService
   ) {
   }
 
-  login(email: string, password: string, domain?: string): Observable<User> {
-    return this.http.post<User>(
-        'https://www.udemy.com/api-2.0/auth/udemy-auth/login/',
-        {
-          email: email,
-          password: password
-        },
-        {
-          headers: this.headers
+  login(domain?: string): void {
+    let url: string = 'https://www.udemy.com/join/login-popup';
+    if (domain) {
+      url = `https://${domain}.udemy.com`;
+    }
+    const loginWindow: Window = window.open(url, 'modal');
+    this.electronService.remote.session.defaultSession.webRequest.onBeforeSendHeaders(
+      { urls: ['*://*.udemy.com/*'] },
+      (request, callback) => {
+        if (request.requestHeaders.Authorization) {
+          const accessToken: string =  request.requestHeaders.Authorization.split(' ')[1];
+          const subDomain: string =  new URL(request.url).hostname.split('.')[0];
+          this.initSession(accessToken, domain);
+          console.log('access_token', accessToken);
+          console.log('subdomain', subDomain);
+          loginWindow.close();
+          this.router.navigate(['/dashboard']);
         }
-    )
-    .pipe(
-        map(value => {
-          this.initSession(value, domain);
-          return value;
-        })
+        callback({ requestHeaders: request.requestHeaders });
+      }
     );
   }
 
@@ -52,13 +50,8 @@ export class AuthService {
   getSubDomain(): string {
     return this.subDomain;
   }
-
-  getUser(): User | null {
-    return this.user;
-  }
-
   getToken(): string | null {
-    return this.user!.access_token;
+    return this.token;
   }
 
   logout(): void {
@@ -67,29 +60,29 @@ export class AuthService {
   }
 
   private destroySession(): void {
-    this.user = null;
+    this.token = null;
     this.subDomain = null;
     this.authenticated = false;
-    localStorage.removeItem(USER_KEY);
+    localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(SUB_DOMAIN_KEY);
   }
 
-  private initSession(user: User, domain?: string): void {
-    this.user = user;
+  private initSession(token: string, domain?: string): void {
+    this.token = token;
     this.subDomain = domain || environment.api.udemy.subDomain;
-    localStorage.setItem(USER_KEY, JSON.stringify(user));
+    localStorage.setItem(TOKEN_KEY, token);
     localStorage.setItem(SUB_DOMAIN_KEY, this.subDomain);
     this.authenticated = true;
   }
 
   public restoreSession(): boolean {
-    if (localStorage.getItem(USER_KEY) == null) {
-      this.user = null;
+    if (localStorage.getItem(TOKEN_KEY) == null) {
+      this.token = null;
       this.subDomain = null;
       this.authenticated = false;
       return false;
     } else {
-      this.user = JSON.parse(localStorage.getItem(USER_KEY));
+      this.token = localStorage.getItem(TOKEN_KEY);
       this.subDomain = localStorage.getItem(SUB_DOMAIN_KEY);
       this.authenticated = true;
       return true;
